@@ -1,0 +1,222 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:TODO.ViewModels.Settings"
+             mc:Ignorable="d" d:DesignWidth="1300" d:DesignHeight="800"
+             x:Class="TODO.Views.Settings.SettingsView"
+             x:DataType="vm:SettingsViewModel"
+             FontSize="16">
+
+    <Design.DataContext>
+        <vm:SettingsViewModel/>
+    </Design.DataContext>
+
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top"
+                   Text="Settings"
+                   FontSize="20"
+                   FontWeight="SemiBold"
+                   HorizontalAlignment="Center"
+                   Margin="20"/>
+
+        <TextBlock DockPanel.Dock="Bottom"
+                   HorizontalAlignment="Center"
+                   Padding="5"
+                   FontSize="10"
+                   FontWeight="SemiBold"
+                   Text="Version 1.0.0"/>
+
+        <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto"
+              ColumnDefinitions="320, 200, *"
+              Margin="35, 5, 35, 35"
+              HorizontalAlignment="Left">
+
+            <!-- Dark Mode -->
+            <TextBlock Grid.Row="0" Grid.Column="0"
+                       Text="Dark Mode"
+                       VerticalAlignment="Center"
+                       Margin="0, 10"/>
+            <Button Grid.Row="0" Grid.Column="1"
+                    Content="Not Active"
+                    IsEnabled="False"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"/>
+            <TextBlock Grid.Row="0" Grid.Column="2"
+                       Text="The current version doesn't support dark mode"
+                       Margin="10, 10"/>
+
+
+            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                       HorizontalAlignment="Stretch"
+                       Height="2"
+                       Margin="0, 10, 10 , 10"
+                       Background="Gainsboro"/>
+
+
+            <!-- Todo Storage Location -->
+            <TextBlock Grid.Row="2" Grid.Column="0"
+                       Text="Todo Storage Location:"
+                       Margin="0, 10"/>
+            <Button Grid.Row="2" Grid.Column="1"
+                    Content="Select Storage Location"
+                    Command="{Binding SelectFolderTodoCsvCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"/>
+            <TextBlock Grid.Row="2" Grid.Column="2"
+                       Text="{Binding SelectedFolderTodoCsv}"
+                       TextWrapping="Wrap"
+                       Margin="10, 10"/>
+            <!-- Show this if SelectedFolderTodoCsv is empty -->
+            <TextBlock Grid.Row="2" Grid.Column="2"
+                       IsVisible="{Binding SelectedFolderTodoCsv,
+                                   Converter={x:Static StringConverters.IsNullOrEmpty}}"
+                       Text="The specified location is not accessible, the todos can't be saved"
+                       Foreground="#D32F2F"
+                       Margin="10, 10"/>
+            <!-- Information text -->
+            <TextBlock Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+                       IsVisible="{Binding SelectedFolderTodoCsvInfo,
+                                   Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Text="{Binding SelectedFolderTodoCsvInfo}"
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"
+                       FontSize="14"
+                       Margin="0, 5"/>
+
+
+            <!-- Use the same location -->
+            <CheckBox Grid.Row="4" Grid.Column="0"
+                      IsChecked="{Binding ShareCsvLocation, Mode=OneWay}"
+                      Command="{Binding SwitchShareCsvLocationCommand}"
+                      VerticalAlignment="Stretch"
+                      VerticalContentAlignment="Center"
+                      Content="Use the same location for the archive"
+                      FontSize="16"
+                      Margin="0, 10"/>
+
+
+            <!-- Archive Storage Location -->
+            <TextBlock Grid.Row="5" Grid.Column="0"
+                       Text="Archive Storage Location:"
+                       IsEnabled="{Binding ShareCsvLocation}"
+                       Margin="0, 10"/>
+            <Button Grid.Row="5" Grid.Column="1"
+                    Content="Select Storage Location"
+                    Command="{Binding SelectFolderArchiveCsvCommand}"
+                    IsEnabled="{Binding !ShareCsvLocation}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"/>
+            <TextBlock Grid.Row="5" Grid.Column="2"
+                       Text="{Binding SelectedFolderArchiveCsv}"
+                       TextWrapping="Wrap"
+                       Margin="10, 10"/>
+            <!-- Show this if SelectedFolderArchiveCsv is empty -->
+            <TextBlock Grid.Row="5" Grid.Column="2"
+                       IsVisible="{Binding SelectedFolderArchiveCsv,
+                                   Converter={x:Static StringConverters.IsNullOrEmpty}}"
+                       Text="Specified location is not accessible, the archive can't be saved"
+                       Foreground="#D32F2F"
+                       Margin="10, 10"/>
+            <!-- Information Text -->
+            <TextBlock Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2"
+                       IsVisible="{Binding SelectedFolderArchiveCsvInfo,
+                                   Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Text="{Binding SelectedFolderArchiveCsvInfo}"
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"
+                       FontSize="14"
+                       Margin="0, 5"/>
+
+
+            <Separator Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3"
+                       HorizontalAlignment="Stretch"
+                       Height="2"
+                       Margin="0, 10, 10 , 10"
+                       Background="Gainsboro"/>
+
+
+            <!-- Todo Storage File -->
+            <TextBlock Grid.Row="8" Grid.Column="0"
+                       Text="Todo Storage File:"
+                       Margin="0, 10"/>
+            <Button Grid.Row="8" Grid.Column="1"
+                    Content="Select Storage File"
+                    Command="{Binding SelectFileTodoCsvCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"/>
+            <TextBlock Grid.Row="8" Grid.Column="2"
+                       Text="{Binding SelectedFileTodoCsv}"
+                       TextWrapping="Wrap"
+                       Margin="10, 10"/>
+            <!-- Show this if SelectedFileTodoCsv is empty -->
+            <TextBlock Grid.Row="8" Grid.Column="2"
+                       IsVisible="{Binding SelectedFolderTodoCsv,
+                                   Converter={x:Static StringConverters.IsNullOrEmpty}}"
+                       Text="Specified CSV file is not accessible, the todos can't be saved"
+                       Foreground="#D32F2F"
+                       Margin="10, 10"/>
+            <!-- Information Text -->
+            <TextBlock Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2"
+                       IsVisible="{Binding SelectedFileTodoCsvInfo,
+                                   Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Text="{Binding SelectedFileTodoCsvInfo}"
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"
+                       FontSize="14"
+                       Margin="0, 5"/>
+
+
+            <!-- Archive Storage File -->
+            <TextBlock Grid.Row="10" Grid.Column="0"
+                       Text="Archive Storage File:"
+                       Margin="0, 10"/>
+            <Button Grid.Row="10" Grid.Column="1"
+                    Content="Select Storage File"
+                    Command="{Binding SelectFileArchiveCsvCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"/>
+            <TextBlock Grid.Row="10" Grid.Column="2"
+                       Text="{Binding SelectedFileArchiveCsv}"
+                       TextWrapping="Wrap"
+                       Margin="10, 10"/>
+            <!-- Show this if SelectedFileArchiveCsv is empty -->
+            <TextBlock Grid.Row="10" Grid.Column="2"
+                       IsVisible="{Binding SelectedFolderArchiveCsv,
+                                   Converter={x:Static StringConverters.IsNullOrEmpty}}"
+                       Text="Specified CSV file is not accessible, the archive can't be saved"
+                       Foreground="#D32F2F"
+                       Margin="10, 10"/>
+            <!-- Information Text -->
+            <TextBlock Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2"
+                       IsVisible="{Binding SelectedFileArchiveCsvInfo,
+                                   Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Text="{Binding SelectedFileArchiveCsvInfo}"
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"
+                       FontSize="14"
+                       Margin="0, 5"/>
+
+            <!-- General Settings Error -->
+            <TextBlock Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="3"
+                       IsVisible="{Binding GeneralSettingsError,
+                                   Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Text="{Binding GeneralSettingsError}"
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"
+                       Foreground="#D32F2F"
+                       FontSize="18"
+                       Margin="0, 10, 0, 5"/>
+
+            <!-- General Settings Info -->
+            <TextBlock Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="3"
+                       IsVisible="{Binding GeneralSettingsInfo,
+                                   Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Text="{Binding GeneralSettingsInfo}"
+                       VerticalAlignment="Center"
+                       Foreground="#4CAF50"
+                       TextWrapping="Wrap"
+                       FontSize="16"/>
+        </Grid>
+    </DockPanel>
+</UserControl>

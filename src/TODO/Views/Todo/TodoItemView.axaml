@@ -1,0 +1,182 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:vm="clr-namespace:TODO.ViewModels.Todo"
+             xmlns:converters="clr-namespace:TODO.Converters"
+             xmlns:enums="clr-namespace:TODO.Models"
+             mc:Ignorable="d" d:DesignWidth="1300" d:DesignHeight="800"
+             x:Class="TODO.Views.Todo.TodoItemView"
+             x:DataType="vm:TodoItemViewModel"
+             FontSize="16">
+
+    <UserControl.Resources>
+        <converters:EnumDescriptionConverter x:Key="EnumDescConverter"/>
+        <converters:TodoStateToBrushConverter x:Key="TodoStateToBrushConverter"/>
+
+        <x:Double x:Key="CalendarDatePickerCurrentDayFontSize">15</x:Double>
+    </UserControl.Resources>
+
+    <Design.DataContext>
+        <vm:TodoItemViewModel/>
+    </Design.DataContext>
+
+    <ItemsControl Name="Root" ItemsSource="{Binding TodoList}">
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <Grid ColumnDefinitions="*, 23*, 6*, 8*, 2*, 2*" RowDefinitions="Auto" Margin="5" IsVisible="{Binding IsShown}">
+                    <CheckBox Grid.Column="0"
+                              x:CompileBindings="False"
+                              IsChecked="{Binding IsChecked, Mode=OneWay}"
+                              Command="{Binding #Root.DataContext.CompleteTodoCommand}"
+                              CommandParameter="{Binding}"
+                              Margin="0, 3"
+                              HorizontalAlignment="Left"/>
+
+                    <Border Grid.Column="1" Grid.ColumnSpan="2"
+                            Background="{Binding IsChecked, Converter={x:Static converters:FuncValueConverters.IsCheckedToBrushConverter}}"
+                            IsVisible="{Binding !IsEdited}"
+                            BorderThickness="1"
+                            CornerRadius="3"
+                            Padding="10, 7"
+                            Margin="0, 0, 0, 0">
+                        <Border.BorderBrush>
+                            <MultiBinding Converter="{StaticResource TodoStateToBrushConverter}" Mode="OneWay">
+                                <Binding Path="DateDeadline"/>
+                                <Binding Path="IsChecked"/>
+                            </MultiBinding>
+                        </Border.BorderBrush>
+                        <Panel>
+                            <TextBlock Text="{Binding Title}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Left"
+                                       FontSize="16"/>
+                            <TextBlock Text="{Binding DateDeadline, Converter={x:Static converters:FuncValueConverters.DateTimeFormatter}}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Right"
+                                       FontSize="16"/>
+                        </Panel>
+                    </Border>
+                    <TextBox Grid.Column="1"
+                             IsVisible="{Binding IsEdited}"
+                             Text="{Binding Title}"
+                             BorderThickness="{Binding IsEdited, Converter={x:Static converters:FuncValueConverters.EditStatusConverter}}"
+                             FontSize="16"
+                             Padding="9, 4"
+                             VerticalContentAlignment="Center">
+                    </TextBox>
+
+
+                    <CalendarDatePicker Grid.Column="2" SelectedDate="{Binding DateDeadline}"
+                                        x:CompileBindings="False"
+                                        SelectedDateFormat="Custom"
+                                        CustomDateFormatString="d MMM yyyy"
+                                        Watermark="{Binding #Root.DataContext.DateTimeWatermark}"
+                                        IsVisible="{Binding IsEdited}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Margin="5, 0, 0 , 0"
+                                        IsTodayHighlighted="True"
+                                        Padding="10, 0"
+                                        FontSize="16"
+                                        BorderThickness="2">
+                        <CalendarDatePicker.Styles>
+                            <Style Selector="CalendarDatePicker /template/ TextBox">
+                                <Setter Property="FontSize" Value="16"/>
+                            </Style>
+                        </CalendarDatePicker.Styles>
+                        <CalendarDatePicker.Styles>
+                            <Style Selector="CalendarDatePicker /template/ Button">
+                                <Setter Property="Margin" Value="0, 0, 7, 0"/>
+                            </Style>
+                        </CalendarDatePicker.Styles>
+                    </CalendarDatePicker>
+
+
+                    <Border Grid.Column="3" Grid.ColumnSpan="2"
+                            IsVisible="{Binding !IsEdited}"
+                            Background="{Binding IsChecked, Converter={x:Static converters:FuncValueConverters.IsCheckedToBrushConverter}}"
+                            BorderBrush="Black"
+                            BorderThickness="1"
+                            CornerRadius="3"
+                            Padding="10, 6"
+                            Margin="5, 0, 0, 0">
+                        <TextBlock Text="{Binding Priority, Converter={StaticResource EnumDescConverter}}"
+                                   VerticalAlignment="Center"
+                                   FontSize="16"/>
+                    </Border>
+                    <ComboBox Grid.Column="3"
+                              x:CompileBindings="False"
+                              ItemsSource="{Binding #Root.DataContext.Priorities}"
+                              SelectedItem="{Binding Priority, Mode=TwoWay}"
+                              IsVisible="{Binding IsEdited}"
+                              BorderThickness="2"
+                              VerticalContentAlignment="Center"
+                              VerticalAlignment="Stretch"
+                              HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Left"
+                              Margin="5, 0, 0, 0"
+                              Padding="11, 0, 0, 0"
+                              FontSize="16">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="enums:Priority">
+                                <TextBlock Text="{Binding Converter={StaticResource EnumDescConverter}}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Grid.Column="4"
+                            x:CompileBindings="False"
+                            Command="{Binding #Root.DataContext.DeleteTodoCommand}"
+                            CommandParameter="{Binding}"
+                            IsVisible="{Binding IsEdited}"
+                            Margin="5, 0, 0, 0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            FontSize="20"
+                            Background="#D32F2F"
+                            Foreground="white"
+                            i:Attached.Icon="fa-regular fa-trash-can">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="TextBlock.Background" Value="#E57373"/>
+                                <Setter Property="TextBlock.Foreground" Value="white"/>
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+
+
+                    <Button Grid.Column="5"
+                            x:CompileBindings="False"
+                            Command="{Binding #Root.DataContext.EditTodoCommand}"
+                            CommandParameter="{Binding}"
+                            IsVisible="{Binding !IsEdited}"
+                            Margin="5, 0, 0, 0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            FontSize="20"
+                            i:Attached.Icon="fa-regular fa-pen-to-square"/>
+                    <Button Grid.Column="5"
+                            x:CompileBindings="False"
+                            Command="{Binding #Root.DataContext.ConfirmEditTodoCommand}"
+                            CommandParameter="{Binding}"
+                            IsVisible="{Binding IsEdited}"
+                            Margin="5, 0, 0, 0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            FontSize="20"
+                            Background="#4CAF50"
+                            Foreground="white"
+                            i:Attached.Icon="fa-regular fa-circle-check">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="TextBlock.Background" Value="#81C784"/>
+                                <Setter Property="TextBlock.Foreground" Value="white"/>
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+                </Grid>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

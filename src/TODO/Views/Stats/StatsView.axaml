@@ -1,0 +1,113 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:TODO.ViewModels.Stats"
+             mc:Ignorable="d" d:DesignWidth="1300" d:DesignHeight="800"
+             x:Class="TODO.Views.Stats.StatsView"
+             x:DataType="vm:StatsViewModel"
+             FontSize="16">
+
+    <Design.DataContext>
+        <vm:StatsViewModel/>
+    </Design.DataContext>
+
+    <StackPanel>
+        <TextBlock Text="Stats of the Archive"
+                   FontSize="20"
+                   FontWeight="SemiBold"
+                   HorizontalAlignment="Center"
+                   Margin="20"/>
+
+        <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" Margin="30, 0, 30, 30" HorizontalAlignment="Left">
+
+            <Grid Grid.Row="1" RowDefinitions="Auto, Auto" ColumnDefinitions="400, 40" Margin="5" Width="440" HorizontalAlignment="Left">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Total Todos:"/>
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           HorizontalAlignment="Right"
+                           FontFamily="Roboto Mono"
+                           Text="{Binding TodosTotal}"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="Total Completed Todos:"/>
+                <TextBlock Grid.Row="1" Grid.Column="1"
+                           HorizontalAlignment="Right"
+                           FontFamily="Roboto Mono"
+                           Text="{Binding TodosDoneTotal}"/>
+            </Grid>
+
+            <Grid Grid.Row="2" RowDefinitions="Auto, Auto" ColumnDefinitions="400, 40" Margin="5" Width="440" HorizontalAlignment="Left">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Total High Priority Todos:"/>
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           HorizontalAlignment="Right"
+                           FontFamily="Roboto Mono"
+                           Text="{Binding HighPriorityTodosTotal}"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="Total Completed High Priority Todos:"/>
+                <TextBlock Grid.Row="1" Grid.Column="1"
+                           HorizontalAlignment="Right"
+                           FontFamily="Roboto Mono"
+                           Text="{Binding HighPriorityTodosDoneTotal}"/>
+            </Grid>
+
+            <Grid Grid.Row="3" RowDefinitions="Auto, Auto" ColumnDefinitions="400, 40" Margin="5" Width="440" HorizontalAlignment="Left">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Total Medium Priority Todos:"/>
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           HorizontalAlignment="Right"
+                           FontFamily="Roboto Mono"
+                           Text="{Binding MediumPriorityTodosTotal}"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="Total Completed Medium Priority Todos:"/>
+                <TextBlock Grid.Row="1" Grid.Column="1"
+                           HorizontalAlignment="Right"
+                           FontFamily="Roboto Mono"
+                           Text="{Binding MediumPriorityTodosDoneTotal}"/>
+            </Grid>
+
+            <Grid Grid.Row="4" RowDefinitions="Auto, Auto" ColumnDefinitions="400, 40" Margin="5" Width="440" HorizontalAlignment="Left">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Total Low Priority Todos:"/>
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           HorizontalAlignment="Right"
+                           FontFamily="Roboto Mono"
+                           Text="{Binding LowPriorityTodosTotal}"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="Total Completed Low Priority Todos:"/>
+                <TextBlock Grid.Row="1" Grid.Column="1"
+                           HorizontalAlignment="Right"
+                           FontFamily="Roboto Mono"
+                           Text="{Binding LowPriorityTodosDoneTotal}"/>
+            </Grid>
+
+            <Grid Grid.Row="5" RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="400, 40" Margin="5" Width="440" HorizontalAlignment="Left">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Todos with Deadline:"/>
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           HorizontalAlignment="Right"
+                           FontFamily="Roboto Mono"
+                           Text="{Binding TodosWithDeadlineTotal}"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="Todos Completed Before Deadline:"/>
+                <TextBlock Grid.Row="1" Grid.Column="1"
+                           HorizontalAlignment="Right"
+                           FontFamily="Roboto Mono"
+                           Text="{Binding TodosDoneBeforeDeadline}"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0"
+                           Text="Todos Completed After Deadline:"/>
+                <TextBlock Grid.Row="2" Grid.Column="1"
+                           HorizontalAlignment="Right"
+                           FontFamily="Roboto Mono"
+                           Text="{Binding TodosDoneAfterDeadline}"/>
+            </Grid>
+        </Grid>
+    </StackPanel>
+
+</UserControl>

@@ -1,0 +1,148 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:TODO.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:TODO.Converters"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        mc:Ignorable="d"
+        x:Class="TODO.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/list-check.ico"
+        Title="" FontSize="16"
+        Height="800" Width="1300"
+        WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Grid ColumnDefinitions="2*, 18*" RowDefinitions="Auto, *, Auto" ShowGridLines="False">
+        <TransitioningContentControl Grid.Column="1" Grid.Row="1"
+                                     Content="{Binding CurrentViewModel}"
+                                     Margin="10, 0, 10, 0"/>
+
+        <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Spacing="5" Background="Gainsboro">
+            <Border BorderThickness="1, 1, 0, 1"
+                    Background="{Binding ViewOneActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
+                    CornerRadius="10, 0, 0, 10"
+                    Margin="5, 10, 0, 0">
+                <Button Command="{Binding NavigateTodoListCommand}"
+                        Background="{Binding ViewOneActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
+                        CornerRadius="10, 0, 0, 10"
+                        Padding="8">
+                    <StackPanel Orientation="Horizontal" Spacing="10" Margin="5, 0, 0, 0">
+                        <i:Icon Value="fa-solid fa-list-check" FontSize="20"/>
+                        <TextBlock Text="Todo"
+                                   Width="70"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="TextBlock.Background"
+                                    Value="{Binding ViewOneActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"/>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+                <Border.Styles>
+                    <Style Selector="Border:pointerover">
+                        <Setter Property="BorderBrush" Value="black"/>
+                    </Style>
+                </Border.Styles>
+            </Border>
+
+            <Border BorderThickness="1, 1, 0, 1"
+                    Background="{Binding ViewTwoActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
+                    CornerRadius="10, 0, 0, 10"
+                    Margin="5, 0, 0, 0">
+                <Button Command="{Binding NavigateArchiveCommand}"
+                        Background="{Binding ViewTwoActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
+                        CornerRadius="10, 0, 0, 10"
+                        Padding="8">
+                    <StackPanel Orientation="Horizontal" Spacing="10" Margin="5, 0, 0, 0">
+                        <i:Icon Value="fa-solid fa-box-archive" FontSize="20"/>
+                        <TextBlock Text="Archive"
+                                   Width="70"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="TextBlock.Background"
+                                    Value="{Binding ViewTwoActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"/>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+                <Border.Styles>
+                    <Style Selector="Border:pointerover">
+                        <Setter Property="BorderBrush" Value="black"/>
+                    </Style>
+                </Border.Styles>
+            </Border>
+
+            <Border BorderThickness="1, 1, 0, 1"
+                    Tag="Stats"
+                    Background="{Binding ViewThreeActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
+                    CornerRadius="10, 0, 0, 10"
+                    Margin="5, 0, 0, 0">
+                <Button Command="{Binding NavigateStatsCommand}"
+                        Background="{Binding ViewThreeActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
+                        CornerRadius="10, 0, 0, 10"
+                        Padding="8">
+                    <StackPanel Orientation="Horizontal" Spacing="10" Margin="5, 0, 0, 0">
+                        <i:Icon Value="fa-solid fa-chart-bar" FontSize="20"/>
+                        <TextBlock Text="Stats"
+                                   Width="70"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="TextBlock.Background"
+                                    Value="{Binding ViewThreeActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"/>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+            <Border.Styles>
+                <Style Selector="Border:pointerover">
+                    <Setter Property="BorderBrush" Value="black"/>
+                </Style>
+            </Border.Styles>
+            </Border>
+
+            <Border BorderThickness="1, 1, 0, 1"
+                    Background="{Binding ViewFourActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
+                    CornerRadius="10, 0, 0, 10"
+                    Margin="5, 0, 0, 0">
+                <Button Command="{Binding NavigateSettingsCommand}"
+                        Background="{Binding ViewFourActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
+                        CornerRadius="10, 0, 0, 10"
+                        Padding="8">
+                    <StackPanel Orientation="Horizontal" Spacing="10" Margin="5, 0, 0, 0">
+                        <i:Icon Value="fa-solid fa-gear" FontSize="20"/>
+                        <TextBlock Text="Settings"
+                                   Width="70"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="TextBlock.Background"
+                                    Value="{Binding ViewFourActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"/>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+            <Border.Styles>
+                <Style Selector="Border:pointerover">
+                    <Setter Property="BorderBrush" Value="black"/>
+                </Style>
+            </Border.Styles>
+            </Border>
+        </StackPanel>
+    </Grid>
+
+</Window>
