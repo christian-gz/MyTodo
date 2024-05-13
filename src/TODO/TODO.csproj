@@ -24,6 +24,8 @@
         <PackageReference Include="CsvHelper" Version="32.0.1" />
         <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.3.0" />
         <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.10" />
+        <PackageReference Include="Semi.Avalonia" Version="11.0.7" />
+        <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.0.7" />
     </ItemGroup>
 
     <ItemGroup>

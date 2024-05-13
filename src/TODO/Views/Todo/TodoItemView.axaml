@@ -34,8 +34,9 @@
                               Margin="0, 3"
                               HorizontalAlignment="Left"/>
 
+                    <!-- Title if TodoItem is not being edited -->
                     <Border Grid.Column="1" Grid.ColumnSpan="2"
-                            Background="{Binding IsChecked, Converter={x:Static converters:FuncValueConverters.IsCheckedToBrushConverter}}"
+                            Background="{Binding IsChecked, Converter={x:Static converters:FuncValueConverters.IsCheckedToBackgroundBrushConverter}}"
                             IsVisible="{Binding !IsEdited}"
                             BorderThickness="1"
                             CornerRadius="3"
@@ -49,25 +50,29 @@
                         </Border.BorderBrush>
                         <Panel>
                             <TextBlock Text="{Binding Title}"
+                                       TextDecorations="{Binding IsChecked, Converter={x:Static converters:FuncValueConverters.IsCheckedToTextDecoration}}"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Left"
                                        FontSize="16"/>
                             <TextBlock Text="{Binding DateDeadline, Converter={x:Static converters:FuncValueConverters.DateTimeFormatter}}"
+                                       TextDecorations="{Binding IsChecked, Converter={x:Static converters:FuncValueConverters.IsCheckedToTextDecoration}}"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Right"
                                        FontSize="16"/>
                         </Panel>
                     </Border>
+                    <!-- Title if TodoItem is being edited -->
                     <TextBox Grid.Column="1"
                              IsVisible="{Binding IsEdited}"
                              Text="{Binding Title}"
-                             BorderThickness="{Binding IsEdited, Converter={x:Static converters:FuncValueConverters.EditStatusConverter}}"
+                             BorderThickness="2"
+                             BorderBrush="DimGray"
                              FontSize="16"
                              Padding="9, 4"
+                             Classes="Bordered"
                              VerticalContentAlignment="Center">
                     </TextBox>
-
-
+                    <!-- Calendar date picker if TodoItem is being edited -->
                     <CalendarDatePicker Grid.Column="2" SelectedDate="{Binding DateDeadline}"
                                         x:CompileBindings="False"
                                         SelectedDateFormat="Custom"
@@ -79,33 +84,34 @@
                                         Margin="5, 0, 0 , 0"
                                         IsTodayHighlighted="True"
                                         Padding="10, 0"
-                                        FontSize="16"
+                                        Classes="Bordered"
                                         BorderThickness="2">
                         <CalendarDatePicker.Styles>
                             <Style Selector="CalendarDatePicker /template/ TextBox">
                                 <Setter Property="FontSize" Value="16"/>
                             </Style>
-                        </CalendarDatePicker.Styles>
-                        <CalendarDatePicker.Styles>
-                            <Style Selector="CalendarDatePicker /template/ Button">
-                                <Setter Property="Margin" Value="0, 0, 7, 0"/>
+                            <Style Selector="CalendarDatePicker.Bordered /template/ Border">
+                                <Setter Property="BorderBrush" Value="DimGray"/>
                             </Style>
                         </CalendarDatePicker.Styles>
                     </CalendarDatePicker>
 
 
+                    <!-- Priority if the TodoItem is not being edited -->
                     <Border Grid.Column="3" Grid.ColumnSpan="2"
                             IsVisible="{Binding !IsEdited}"
-                            Background="{Binding IsChecked, Converter={x:Static converters:FuncValueConverters.IsCheckedToBrushConverter}}"
-                            BorderBrush="Black"
+                            Background="{Binding IsChecked, Converter={x:Static converters:FuncValueConverters.IsCheckedToBackgroundBrushConverter}}"
+                            BorderBrush="{Binding IsChecked, Converter={x:Static converters:FuncValueConverters.IsCheckedToBorderBrushConverter}}"
                             BorderThickness="1"
                             CornerRadius="3"
                             Padding="10, 6"
                             Margin="5, 0, 0, 0">
                         <TextBlock Text="{Binding Priority, Converter={StaticResource EnumDescConverter}}"
+                                   TextDecorations="{Binding IsChecked, Converter={x:Static converters:FuncValueConverters.IsCheckedToTextDecoration}}"
                                    VerticalAlignment="Center"
                                    FontSize="16"/>
                     </Border>
+                    <!-- Priority if the TodoItem is being edited -->
                     <ComboBox Grid.Column="3"
                               x:CompileBindings="False"
                               ItemsSource="{Binding #Root.DataContext.Priorities}"
@@ -118,13 +124,20 @@
                               HorizontalContentAlignment="Left"
                               Margin="5, 0, 0, 0"
                               Padding="11, 0, 0, 0"
+                              Classes="Bordered"
                               FontSize="16">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="enums:Priority">
                                 <TextBlock Text="{Binding Converter={StaticResource EnumDescConverter}}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
+                        <ComboBox.Styles>
+                            <Style Selector="ComboBox.Bordered /template/ Border">
+                                <Setter Property="BorderBrush" Value="DimGray"/>
+                            </Style>
+                        </ComboBox.Styles>
                     </ComboBox>
+                    <!-- Delete button if the TodoItem is being edited -->
                     <Button Grid.Column="4"
                             x:CompileBindings="False"
                             Command="{Binding #Root.DataContext.DeleteTodoCommand}"
@@ -134,28 +147,26 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             FontSize="20"
-                            Background="#D32F2F"
-                            Foreground="white"
+                            Theme="{DynamicResource SolidButton}"
+                            Classes="Danger"
                             i:Attached.Icon="fa-regular fa-trash-can">
-                        <Button.Styles>
-                            <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                <Setter Property="TextBlock.Background" Value="#E57373"/>
-                                <Setter Property="TextBlock.Foreground" Value="white"/>
-                            </Style>
-                        </Button.Styles>
                     </Button>
 
 
+                    <!-- Edit TodoItem button -->
                     <Button Grid.Column="5"
                             x:CompileBindings="False"
                             Command="{Binding #Root.DataContext.EditTodoCommand}"
                             CommandParameter="{Binding}"
                             IsVisible="{Binding !IsEdited}"
+                            IsEnabled="{Binding !IsChecked}"
                             Margin="5, 0, 0, 0"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
+                            Classes="Tertiary"
                             FontSize="20"
                             i:Attached.Icon="fa-regular fa-pen-to-square"/>
+                    <!-- Confirm edit TodoItem button -->
                     <Button Grid.Column="5"
                             x:CompileBindings="False"
                             Command="{Binding #Root.DataContext.ConfirmEditTodoCommand}"
@@ -165,15 +176,9 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             FontSize="20"
-                            Background="#4CAF50"
-                            Foreground="white"
+                            Theme="{DynamicResource SolidButton}"
+                            Classes="Success"
                             i:Attached.Icon="fa-regular fa-circle-check">
-                        <Button.Styles>
-                            <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                <Setter Property="TextBlock.Background" Value="#81C784"/>
-                                <Setter Property="TextBlock.Foreground" Value="white"/>
-                            </Style>
-                        </Button.Styles>
                     </Button>
                 </Grid>
             </DataTemplate>

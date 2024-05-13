@@ -40,6 +40,8 @@
             <Button Grid.Row="0" Grid.Column="1"
                     Content="Not Active"
                     IsEnabled="False"
+                    Theme="{DynamicResource SolidButton}"
+                    VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"/>
             <TextBlock Grid.Row="0" Grid.Column="2"
@@ -50,17 +52,18 @@
             <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
                        HorizontalAlignment="Stretch"
                        Height="2"
-                       Margin="0, 10, 10 , 10"
-                       Background="Gainsboro"/>
+                       Margin="0, 10, 10 , 10"/>
 
 
-            <!-- Todo Storage Location -->
+            <!-- TodoList Storage Location -->
             <TextBlock Grid.Row="2" Grid.Column="0"
                        Text="Todo Storage Location:"
                        Margin="0, 10"/>
             <Button Grid.Row="2" Grid.Column="1"
                     Content="Select Storage Location"
                     Command="{Binding SelectFolderTodoCsvCommand}"
+                    Theme="{DynamicResource SolidButton}"
+                    VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"/>
             <TextBlock Grid.Row="2" Grid.Column="2"
@@ -105,6 +108,8 @@
                     Content="Select Storage Location"
                     Command="{Binding SelectFolderArchiveCsvCommand}"
                     IsEnabled="{Binding !ShareCsvLocation}"
+                    Theme="{DynamicResource SolidButton}"
+                    VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"/>
             <TextBlock Grid.Row="5" Grid.Column="2"
@@ -132,17 +137,18 @@
             <Separator Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3"
                        HorizontalAlignment="Stretch"
                        Height="2"
-                       Margin="0, 10, 10 , 10"
-                       Background="Gainsboro"/>
+                       Margin="0, 10, 10 , 10"/>
 
 
-            <!-- Todo Storage File -->
+            <!-- TodoList Storage File -->
             <TextBlock Grid.Row="8" Grid.Column="0"
                        Text="Todo Storage File:"
                        Margin="0, 10"/>
             <Button Grid.Row="8" Grid.Column="1"
                     Content="Select Storage File"
                     Command="{Binding SelectFileTodoCsvCommand}"
+                    Theme="{DynamicResource SolidButton}"
+                    VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"/>
             <TextBlock Grid.Row="8" Grid.Column="2"
@@ -174,6 +180,8 @@
             <Button Grid.Row="10" Grid.Column="1"
                     Content="Select Storage File"
                     Command="{Binding SelectFileArchiveCsvCommand}"
+                    Theme="{DynamicResource SolidButton}"
+                    VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"/>
             <TextBlock Grid.Row="10" Grid.Column="2"

@@ -31,15 +31,9 @@
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
                     Content="Yes"
-                    Foreground="white"
-                    Background="Blue"
-                    Margin="10, 5, 5, 5">
-                <Button.Styles>
-                    <Style Selector="Button:pointerover /template/ ContentPresenter">
-                        <Setter Property="TextBlock.Background" Value="#52A5F5"/>
-                        <Setter Property="TextBlock.Foreground" Value="white"/>
-                    </Style>
-                </Button.Styles>
+                    Theme="{DynamicResource SolidButton}"
+                    Classes="Primary"
+                    Margin="10, 10, 5, 5">
             </Button>
             <Button Grid.Row="2" Grid.Column="1"
                     Command="{Binding ConfirmDeletionCommand}"
@@ -47,15 +41,9 @@
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
                     Content="No"
-                    Foreground="white"
-                    Background="Gray"
-                    Margin="0, 5, 10, 5">
-                <Button.Styles>
-                    <Style Selector="Button:pointerover /template/ ContentPresenter">
-                        <Setter Property="TextBlock.Background" Value="#BDBDBD"/>
-                        <Setter Property="TextBlock.Foreground" Value="white"/>
-                    </Style>
-                </Button.Styles>
+                    Theme="{DynamicResource SolidButton}"
+                    Classes="Tertiary"
+                    Margin="0, 10, 10, 5">
             </Button>
 
         </Grid>

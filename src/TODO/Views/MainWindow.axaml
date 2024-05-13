@@ -22,7 +22,7 @@
                                      Content="{Binding CurrentViewModel}"
                                      Margin="10, 0, 10, 0"/>
 
-        <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Spacing="5" Background="Gainsboro">
+        <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Spacing="5" Background="#f0f0f0">
             <Border BorderThickness="1, 1, 0, 1"
                     Background="{Binding ViewOneActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
                     CornerRadius="10, 0, 0, 10"
@@ -30,6 +30,7 @@
                 <Button Command="{Binding NavigateTodoListCommand}"
                         Background="{Binding ViewOneActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
                         CornerRadius="10, 0, 0, 10"
+                        Foreground="Black"
                         Padding="8">
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="5, 0, 0, 0">
                         <i:Icon Value="fa-solid fa-list-check" FontSize="20"/>
@@ -59,6 +60,7 @@
                 <Button Command="{Binding NavigateArchiveCommand}"
                         Background="{Binding ViewTwoActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
                         CornerRadius="10, 0, 0, 10"
+                        Foreground="Black"
                         Padding="8">
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="5, 0, 0, 0">
                         <i:Icon Value="fa-solid fa-box-archive" FontSize="20"/>
@@ -90,6 +92,7 @@
                 <Button Command="{Binding NavigateStatsCommand}"
                         Background="{Binding ViewThreeActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
                         CornerRadius="10, 0, 0, 10"
+                        Foreground="Black"
                         Padding="8">
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="5, 0, 0, 0">
                         <i:Icon Value="fa-solid fa-chart-bar" FontSize="20"/>
@@ -120,6 +123,7 @@
                 <Button Command="{Binding NavigateSettingsCommand}"
                         Background="{Binding ViewFourActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
                         CornerRadius="10, 0, 0, 10"
+                        Foreground="Black"
                         Padding="8">
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="5, 0, 0, 0">
                         <i:Icon Value="fa-solid fa-gear" FontSize="20"/>

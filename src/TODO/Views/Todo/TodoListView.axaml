@@ -32,27 +32,27 @@
 
         <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto">
             <Grid Grid.Row="0" ColumnDefinitions="30*, 12*" RowDefinitions="Auto, Auto" Margin="5">
-                <!-- Title of the new todo -->
+                <!-- Title of the new TodoItem -->
                 <TextBox Grid.Column="0" Grid.Row="0"
                          Text="{Binding TitleNewTodo}"
                          HorizontalAlignment="Stretch"
                          VerticalAlignment="Stretch"
                          VerticalContentAlignment="Center"
                          FontSize="16"
-                         BorderThickness="2"
                          TabIndex="0"
                          Padding="10, 6"
+                         Classes="Bordered"
                          Watermark="Please enter the Title of the Todo you want to add"/>
-                <!-- Priority of the new todo -->
+                <!-- Priority of the new TodoItem -->
                 <ComboBox Grid.Column="1" Grid.Row="0"
                           ItemsSource="{Binding Priorities}"
                           SelectedItem="{Binding PriorityNewTodo}"
                           Margin="5, 0, 0, 0"
-                          BorderThickness="2"
                           VerticalContentAlignment="Center"
                           VerticalAlignment="Stretch"
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Left"
+                          Classes="Bordered"
                           FontSize="16">
                     <ComboBox.ItemTemplate>
                         <DataTemplate x:DataType="enums:Priority">
@@ -76,38 +76,26 @@
                                         HorizontalContentAlignment="Left"
                                         VerticalAlignment="Stretch"
                                         Width="175"
+                                        Classes="Bordered"
                                         Margin="5, 0, 0 , 0"
-                                        IsTodayHighlighted="True"
-                                        Padding="10, 0"
-                                        BorderThickness="2">
+                                        IsTodayHighlighted="True">
                         <CalendarDatePicker.Styles>
                             <Style Selector="CalendarDatePicker /template/ TextBox">
                                 <Setter Property="FontSize" Value="16"/>
                             </Style>
                         </CalendarDatePicker.Styles>
-                        <CalendarDatePicker.Styles>
-                            <Style Selector="CalendarDatePicker /template/ Button">
-                                <Setter Property="Margin" Value="0, 0, 7, 0"/>
-                            </Style>
-                        </CalendarDatePicker.Styles>
                     </CalendarDatePicker>
 
-                    <!-- Add new todo button -->
+                    <!-- Add new TodoItem button -->
                     <Button Command="{Binding AddTodoCommand}"
                             Content="Add Todo"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Center"
                             VerticalAlignment="Stretch"
-                            Foreground="white"
-                            Background="#4CAF50"
+                            Theme="{DynamicResource SolidButton}"
+                            Classes="Success"
                             TabIndex="1"
                             Margin="5, 0, 0, 0">
-                    <Button.Styles>
-                        <Style Selector="Button:pointerover /template/ ContentPresenter">
-                            <Setter Property="TextBlock.Background" Value="#81C784"/>
-                            <Setter Property="TextBlock.Foreground" Value="white"/>
-                        </Style>
-                    </Button.Styles>
                     </Button>
 
                 </DockPanel>
@@ -116,8 +104,7 @@
             <Separator Grid.Row="1"
                        HorizontalAlignment="Stretch"
                        Height="2"
-                       Margin="5, 5, 12, 5"
-                       Background="Gainsboro"/>
+                       Margin="5, 5, 12, 5"/>
 
             <Grid Grid.Row="2" ColumnDefinitions="*, 10*, 10*, 17*, 2*" Margin="5" ShowGridLines="False">
                 <!-- Change the sorting -->
@@ -126,7 +113,9 @@
                           ItemsSource="{Binding SortingOptions, Mode=TwoWay}"
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Stretch"
-                          BorderThickness="2"
+                          BorderThickness="1"
+                          Padding="8"
+                          Classes="Bordered"
                           FontSize="16">
                 </ComboBox>
                 <!-- Change the filter -->
@@ -135,8 +124,10 @@
                           ItemsSource="{Binding FilterOptions, Mode=TwoWay}"
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Stretch"
-                          BorderThickness="2"
+                          BorderThickness="1"
                           Margin="5, 0, 0, 0"
+                          Padding="8"
+                          Classes="Bordered"
                           FontSize="16">
                 </ComboBox>
             </Grid>
@@ -150,18 +141,12 @@
                         HorizontalContentAlignment="Center"
                         VerticalContentAlignment="Center"
                         Content="Archive Checked"
-                        Foreground="white"
-                        Background="#2196F3"
+                        Theme="{DynamicResource SolidButton}"
+                        Classes="Primary"
                         Margin="0, 0, 2.5, 0">
                     <ToolTip.Tip>
                         Move all checked Todos to the Archive
                     </ToolTip.Tip>
-                    <Button.Styles>
-                        <Style Selector="Button:pointerover /template/ ContentPresenter">
-                            <Setter Property="TextBlock.Background" Value="#64B5F6"/>
-                            <Setter Property="TextBlock.Foreground" Value="white"/>
-                        </Style>
-                    </Button.Styles>
                 </Button>
                 <Button Grid.Column="2"
                         Command="{Binding RemoveAllTodosCommand}"
@@ -169,18 +154,12 @@
                         HorizontalContentAlignment="Center"
                         VerticalContentAlignment="Center"
                         Content="Archive All"
-                        Foreground="white"
-                        Background="#D32F2F"
+                        Theme="{DynamicResource SolidButton}"
+                        Classes="Secondary"
                         Margin="2.5, 0, 0, 0">
                     <ToolTip.Tip>
                         Move all Todos to the Archive
                     </ToolTip.Tip>
-                    <Button.Styles>
-                        <Style Selector="Button:pointerover /template/ ContentPresenter">
-                            <Setter Property="TextBlock.Background" Value="#E57373"/>
-                            <Setter Property="TextBlock.Foreground" Value="white"/>
-                        </Style>
-                    </Button.Styles>
                 </Button>
             </Grid>
         </Grid>
