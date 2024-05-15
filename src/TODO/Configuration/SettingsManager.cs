@@ -325,4 +325,12 @@ public class SettingsManager
 
         return true;
     }
+
+    /// <summary>
+    /// Return the DarkModeEnabled value.
+    /// </summary>
+    public bool GetDarkModeEnabled()
+    {
+        return _appSettings.DarkModeEnabled;
+    }
 }

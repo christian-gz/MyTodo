@@ -14,14 +14,12 @@ namespace TODO.ViewModels;
 
 public class MainWindowViewModel : ReactiveObject
 {
-    public MainWindowViewModel()
+    public MainWindowViewModel(SettingsManager settingsManager)
     {
         // setup a list to save ApplicationEvents that are raised during initialisation
         List<ApplicationEventArgs> eventArgsList = new();
         EventHandler<ApplicationEventArgs> collectApplicationEvents = (o, e) => eventArgsList.Add(e);
         EventManager.ApplicationEvent += collectApplicationEvents;
-
-        SettingsManager settingsManager = new SettingsManager();
 
         TodoListService service = new TodoListService(settingsManager);
         _todoListService = service;
