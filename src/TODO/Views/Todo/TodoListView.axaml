@@ -132,7 +132,9 @@
                 </ComboBox>
             </Grid>
 
-            <view:TodoItemView Grid.Row="3" DataContext="{Binding TodoItemViewModel}"/>
+            <ScrollViewer Grid.Row="3" MaxHeight="500">
+                <view:TodoItemView DataContext="{Binding TodoItemViewModel}"/>
+            </ScrollViewer>
 
             <Grid Grid.Row="4" ColumnDefinitions="*, *, *, *" Margin="5">
                 <Button Grid.Column="1"
