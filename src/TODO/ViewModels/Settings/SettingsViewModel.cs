@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Reactive.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ReactiveUI;
@@ -17,8 +16,10 @@ public class SettingsViewModel : SwappableViewModelBase
     {
         _settingsManager = settingsManager;
 
-        SelectedFileTodoCsv = _settingsManager.GetTodoCsvPath();
-        SelectedFileArchiveCsv = _settingsManager.GetArchiveCsvPath();
+        _selectedFileTodoCsv = _settingsManager.GetTodoCsvPath();
+        _selectedFileArchiveCsv = _settingsManager.GetArchiveCsvPath();
+        _selectedFolderTodoCsv = Path.GetDirectoryName(_selectedFileTodoCsv);
+        _selectedFolderArchiveCsv = Path.GetDirectoryName(_selectedFileArchiveCsv);
 
         EventManager.ApplicationEvent += OnApplicationEvent;
 
@@ -57,10 +58,10 @@ public class SettingsViewModel : SwappableViewModelBase
     private string? _selectedFileTodoCsvInfo;
     private string? _selectedFileArchiveCsvInfo;
 
+    private bool _firstVisit = true;
+
     private string? _generalSettingsInfo;
-    private int _generalSettingsInfoDisplayTimes;
     private string? _generalSettingsError;
-    private int _generalSettingsErrorDisplayTimes;
 
     public Interaction<string?, string?> SelectFolderInteraction => this._selectFolderInteraction;
     public Interaction<string?, string?> SelectFileInteraction => this._selectFileInteraction;
@@ -81,15 +82,18 @@ public class SettingsViewModel : SwappableViewModelBase
         get => _selectedFolderTodoCsv;
         set
         {
-            if (_selectedFolderTodoCsv != value && _settingsManager.UpdateTodoCsvLocation(value, nameof(SelectedFolderTodoCsv)))
+            if (_selectedFolderTodoCsv != value)
             {
-                // use the private fields to not call another UpdateTodoCsv
-                _selectedFileTodoCsv = _settingsManager.GetTodoCsvPath();
-                this.RaiseAndSetIfChanged(ref _selectedFolderTodoCsv, value);
+                 _settingsManager.UpdateTodoCsvLocation(value);
+
+                string currentFileTodoCsvPath = _settingsManager.GetTodoCsvPath();
+                // use the private field to not call another UpdateTodoCsv
+                _selectedFileTodoCsv = currentFileTodoCsvPath;
+                this.RaiseAndSetIfChanged(ref _selectedFolderTodoCsv, Path.GetDirectoryName(currentFileTodoCsvPath));
 
                 if (ShareCsvLocation)
                 {
-                    SelectedFolderArchiveCsv = _selectedFolderTodoCsv;
+                    SelectedFolderArchiveCsv = value;
                 }
             }
         }
@@ -99,11 +103,15 @@ public class SettingsViewModel : SwappableViewModelBase
         get => _selectedFolderArchiveCsv;
         set
         {
-            if (_selectedFolderArchiveCsv != value && _settingsManager.UpdateArchiveCsvLocation(value, nameof(SelectedFolderArchiveCsv)))
+            if (_selectedFolderArchiveCsv != value)
             {
-                // use the private fields to not call another UpdateArchiveCsv
-                _selectedFileArchiveCsv = _settingsManager.GetArchiveCsvPath();
-                this.RaiseAndSetIfChanged(ref _selectedFolderArchiveCsv, value);
+                Console.WriteLine("test");
+                 _settingsManager.UpdateArchiveCsvLocation(value);
+
+                string currentFileArchiveCsvPath = _settingsManager.GetArchiveCsvPath();
+                // use the private field to not call another UpdateArchiveCsv
+                _selectedFileArchiveCsv = currentFileArchiveCsvPath;
+                this.RaiseAndSetIfChanged(ref _selectedFolderArchiveCsv, Path.GetDirectoryName(currentFileArchiveCsvPath));
             }
         }
     }
@@ -112,11 +120,14 @@ public class SettingsViewModel : SwappableViewModelBase
         get => _selectedFileTodoCsv;
         set
         {
-            if (_settingsManager.UpdateTodoCsvPath(value, nameof(SelectedFileTodoCsv)))
+            if (_selectedFileTodoCsv != value)
             {
-                _selectedFolderTodoCsv = Path.GetDirectoryName(value);
+                _settingsManager.UpdateTodoCsvPath(value);
 
-                this.RaiseAndSetIfChanged(ref _selectedFileTodoCsv, value);
+                string currentFileTodoCsvPath = _settingsManager.GetTodoCsvPath();
+                // use the private field to not call another UpdateTodoCsv
+                _selectedFolderTodoCsv = Path.GetDirectoryName(currentFileTodoCsvPath);
+                this.RaiseAndSetIfChanged(ref _selectedFileTodoCsv, currentFileTodoCsvPath);
 
                 if (ShareCsvLocation && _selectedFolderTodoCsv != _selectedFolderArchiveCsv)
                     ShareCsvLocation = false;
@@ -128,11 +139,14 @@ public class SettingsViewModel : SwappableViewModelBase
         get => _selectedFileArchiveCsv;
         set
         {
-            if (_settingsManager.UpdateArchiveCsvPath(value, nameof(SelectedFileArchiveCsv)))
+            if (_selectedFileArchiveCsv != value)
             {
-                _selectedFolderArchiveCsv = Path.GetDirectoryName(value);
+                _settingsManager.UpdateArchiveCsvPath(value);
 
-                this.RaiseAndSetIfChanged(ref _selectedFileArchiveCsv, value);
+                string currentFileArchiveCsvPath = _settingsManager.GetArchiveCsvPath();
+                // use the private field to not call another UpdateArchiveCsv
+                _selectedFolderArchiveCsv = Path.GetDirectoryName(currentFileArchiveCsvPath);
+                this.RaiseAndSetIfChanged(ref _selectedFileArchiveCsv, currentFileArchiveCsvPath);
 
                 if (ShareCsvLocation && _selectedFolderTodoCsv != _selectedFolderArchiveCsv)
                     ShareCsvLocation = false;
@@ -164,20 +178,12 @@ public class SettingsViewModel : SwappableViewModelBase
     public string? GeneralSettingsInfo
     {
         get => _generalSettingsInfo;
-        set
-        {
-            _generalSettingsInfoDisplayTimes = 1;
-            this.RaiseAndSetIfChanged(ref _generalSettingsInfo, value);
-        }
+        set => this.RaiseAndSetIfChanged(ref _generalSettingsInfo, value);
     }
     public string? GeneralSettingsError
     {
         get => _generalSettingsError;
-        set
-        {
-            _generalSettingsErrorDisplayTimes = 1;
-            this.RaiseAndSetIfChanged(ref _generalSettingsError, value);
-        }
+        set => this.RaiseAndSetIfChanged(ref _generalSettingsError, value);
     }
 
     private void SwitchShareCsvLocation()
@@ -212,82 +218,77 @@ public class SettingsViewModel : SwappableViewModelBase
 
     private void OnApplicationEvent(object? o, ApplicationEventArgs e)
     {
-        if (e.EventType == EventType.Service)
+        switch (e.EventType)
         {
-            if (e.Message == null)
-                return;
+            case EventType.Service:
+                if (e.Message == null)
+                    return;
 
-            ServiceMessage message = (ServiceMessage)e.Message;
+                ServiceMessage serviceMessage = (ServiceMessage)e.Message;
 
-            if (string.IsNullOrEmpty(message.PropertyName))
-            {
                 if (e.IsSuccessful)
                 {
-                    GeneralSettingsInfo += "\n" + message.Message;
+                    GeneralSettingsInfo += "\n" + serviceMessage.Message;
                 }
                 else
                 {
-                    GeneralSettingsError += "\n" + message.Message;
+                    GeneralSettingsError += "\n" + serviceMessage.Message;
                 }
-                return;
-            }
+                break;
+            case EventType.Settings:
+                if (e.Message == null)
+                    return;
 
-            string errorPropertyName = $"{message.PropertyName}Info";
+                SettingsMessage settingsMessage = (SettingsMessage)e.Message;
 
-            PropertyInfo? propertyInfo =
-                GetType().GetProperty(errorPropertyName, BindingFlags.Public | BindingFlags.Instance);
+                if (!string.IsNullOrWhiteSpace(settingsMessage.PropertyName))
+                {
+                    switch (settingsMessage.PropertyName)
+                    {
+                        case "TodoCsvPath":
+                            SelectedFileTodoCsvInfo = settingsMessage.Message;
+                            SelectedFolderTodoCsvInfo = settingsMessage.Message;
 
-            if (propertyInfo != null && propertyInfo.CanWrite)
-            {
-                propertyInfo.SetValue(this, message.Message);
-            }
-            else
-            {
-                Console.WriteLine($"Cant find property { errorPropertyName } or can't write to it");
-            }
-        }
-        else if (e.EventType == EventType.Settings)
-        {
-            if (e.Message == null)
-                return;
+                            break;
+                        case "ArchiveCsvPath":
+                            SelectedFileArchiveCsvInfo = settingsMessage.Message;
+                            SelectedFolderArchiveCsvInfo = settingsMessage.Message;
 
-            SettingsMessage message = (SettingsMessage)e.Message;
+                            break;
+                    }
 
-            if (e.IsSuccessful)
-            {
-                GeneralSettingsInfo += "\n" + message.Message;
-            }
-            else
-            {
-                GeneralSettingsError += "\n" + message.Message;
-            }
-            return;
+                    return;
+                }
+
+                if (e.IsSuccessful)
+                {
+                    GeneralSettingsInfo += "\n" + settingsMessage.Message;
+                }
+                else
+                {
+                    GeneralSettingsError += "\n" + settingsMessage.Message;
+                }
+                break;
         }
     }
 
     public override void LoadViewModel()
     {
-        SelectedFolderTodoCsvInfo = "";
-        SelectedFolderArchiveCsvInfo = "";
-        SelectedFileTodoCsvInfo = "";
-        SelectedFileArchiveCsvInfo = "";
+        if (!_firstVisit)
+        {
+            SelectedFolderTodoCsvInfo = "";
+            SelectedFolderArchiveCsvInfo = "";
+            SelectedFileTodoCsvInfo = "";
+            SelectedFileArchiveCsvInfo = "";
 
-        if (_generalSettingsInfoDisplayTimes > 0)
-        {
-            _generalSettingsInfoDisplayTimes--;
-        }
-        else
-        {
-            GeneralSettingsInfo = "";
-        }
-
-        if (_generalSettingsErrorDisplayTimes > 0)
-        {
-            _generalSettingsErrorDisplayTimes--;
-        }
-        else
-        {
             GeneralSettingsError = "";
+            GeneralSettingsInfo = "";
+
+            _settingsManager.CheckSettingsStatus();
+        }
+        else
+        {
+            _firstVisit = false;
         }
     }
 }

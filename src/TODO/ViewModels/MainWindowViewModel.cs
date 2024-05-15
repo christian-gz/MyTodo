@@ -21,10 +21,11 @@ public class MainWindowViewModel : ReactiveObject
         EventHandler<ApplicationEventArgs> collectApplicationEvents = (o, e) => eventArgsList.Add(e);
         EventManager.ApplicationEvent += collectApplicationEvents;
 
-        TodoListService service = new TodoListService();
+        SettingsManager settingsManager = new SettingsManager();
+
+        TodoListService service = new TodoListService(settingsManager);
         _todoListService = service;
 
-        SettingsManager settingsManager = new SettingsManager(service);
 
         _todoListView = new TodoListViewModel(service);
         _archiveView = new ArchiveViewModel(service);

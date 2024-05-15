@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using TODO.Configuration;
 using TODO.Events;
 using TODO.Models;
 
@@ -8,8 +9,19 @@ namespace TODO.Services;
 
 public class TodoListService : IService
 {
-    public TodoListService() { }
+    public TodoListService(SettingsManager settingsManager)
+    {
+        _settingsManager = settingsManager;
+        _todoCsvPath = _settingsManager.GetTodoCsvPath();
+        _archiveCsvPath = _settingsManager.GetArchiveCsvPath();
 
+        _settingsManager.SettingsChange += HandleSettingsChange;
+
+        TryLoadData(_todoCsvPath, TodoList, TodoListChanged, true);
+        TryLoadData(_archiveCsvPath, Archive, ArchiveChanged, false);
+    }
+
+    private readonly SettingsManager _settingsManager;
     private readonly CsvFileManager _csvFileManager = new();
     private string _todoCsvPath;
     private string _archiveCsvPath;
@@ -62,66 +74,73 @@ public class TodoListService : IService
 
     public void OnClosing()
     {
-        TrySaveData(_todoCsvPath, TodoList, null);
-        TrySaveData(_archiveCsvPath, Archive, null);
+        TrySaveData(_todoCsvPath, TodoList);
+        TrySaveData(_archiveCsvPath, Archive);
     }
 
-    public bool RefreshTodoCsvPath(string todoCsvPath, string? propertyName)
+    /// <summary>
+    /// Handles the SettingsChanged event by applying the new path.
+    /// </summary>
+    /// <param name="o"> Object that raised the event. </param>
+    /// <param name="e"> Includes which setting got changed and the new path. </param>
+    private void HandleSettingsChange(object? o, SettingsChangedEventArgs e)
     {
-        if (_todoCsvPath == todoCsvPath)
-            // no need to load if the path is the same, only happens when the
-            // SettingsViewModel initially sets the property
-            return true;
-
-        bool resultTryLoadData = TryLoadData(todoCsvPath, TodoList, TodoListChanged, true, propertyName);
-
-        if (resultTryLoadData)
-            _todoCsvPath = todoCsvPath;
-
-        return resultTryLoadData;
-    }
-
-    public bool SaveTodoCsv(string todoCsvPath, string? propertyName)
-    {
-        if (TrySaveData(todoCsvPath, TodoList, propertyName))
+        bool resultTryLoadData;
+        string? path = e.Value;
+        string? setting = e.Setting;
+        
+        if (setting == null)
+            return;
+        
+        if (path == null)
         {
-            if (_todoCsvPath != todoCsvPath)
-                // if the file is missing when first calling RefreshTodoCsvPath the path is not set
-                _todoCsvPath = todoCsvPath;
-
-            return true;
+            _settingsManager.ConfirmSettingsChange(setting, false);
+            return;
         }
 
-        return false;
-    }
-
-    public bool RefreshArchiveCsvPath(string archiveCsvPath, string? propertyName)
-    {
-        if (_archiveCsvPath == archiveCsvPath)
-            // no need to load if the path is the same, only happens when the
-            // SettingsViewModel initially sets the property
-            return true;
-
-        bool resultTryLoadData = TryLoadData(archiveCsvPath, Archive, ArchiveChanged, false, propertyName);
-
-        if (resultTryLoadData)
-            _archiveCsvPath = archiveCsvPath;
-
-        return resultTryLoadData;
-    }
-
-    public bool SaveArchiveCsv(string archiveCsvPath, string? propertyName)
-    {
-        if (TrySaveData(archiveCsvPath, Archive, propertyName))
+        switch (e.Setting)
         {
-            if (_archiveCsvPath != archiveCsvPath)
-                // if the file is missing when first calling RefreshTodoCsvPath the path is not set
-                _archiveCsvPath = archiveCsvPath;
+            case "TodoCsvPath":
+                if (_todoCsvPath == path)
+                {
+                    _settingsManager.ConfirmSettingsChange(setting, true);
+                    return;
+                }
 
-            return true;
+                resultTryLoadData = TryLoadData(path, TodoList, TodoListChanged, true);
+
+                if (resultTryLoadData)
+                    _todoCsvPath = path;
+
+                _settingsManager.ConfirmSettingsChange(setting, resultTryLoadData);
+
+                break;
+            case "ArchiveCsvPath":
+                if (_archiveCsvPath == path)
+                {
+                    _settingsManager.ConfirmSettingsChange(setting, true);
+                    return;
+                }
+
+                resultTryLoadData = TryLoadData(path, Archive, ArchiveChanged, false);
+
+                if (resultTryLoadData)
+                    _archiveCsvPath = path;
+
+                _settingsManager.ConfirmSettingsChange(setting, resultTryLoadData);
+
+                break;
         }
+    }
 
-        return false;
+    public bool SaveTodoCsv(string todoCsvPath)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool SaveArchiveCsv(string archiveCsvPath)
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -132,10 +151,8 @@ public class TodoListService : IService
     /// <param name="list"> The list to save the loaded TodoItems at. </param>
     /// <param name="eventHandler"> The event to invoke if the data is successfully loaded. </param>
     /// <param name="isTodoList"> Used to differentiate the TodoList so the data can be reset. </param>
-    /// <param name="propertyName"> Used to notify the user about the result of the save operation. (ApplicationEvent) </param>
     /// <returns> True if successful, false otherwise </returns>
-    private bool TryLoadData(string path, List<TodoItem> list, EventHandler eventHandler,
-                             bool isTodoList, string? propertyName)
+    private bool TryLoadData(string path, List<TodoItem> list, EventHandler eventHandler, bool isTodoList)
     {
         try
         {
@@ -162,10 +179,10 @@ public class TodoListService : IService
                 EventType.Service,
                 true,
                 new ServiceMessage(
-                    propertyName,
+                    null,
                     $"Successfully loaded { path }"
-                    )
-                );
+                )
+            );
 
             return true;
         }
@@ -175,17 +192,16 @@ public class TodoListService : IService
                 EventType.Service,
                 false,
                 new ServiceMessage(
-                    propertyName,
+                    null,
                     $"Could not load the file with path { path }, " +
                     $"please make sure the application has the rights to access it or " +
                     $"select another file."
-                    )
-                );
+                )
+            );
         }
         catch (FileNotFoundException)
         {
-            // if the file is not found, the SettingsManager can create it
-            throw;
+            TrySaveData(path, list);
         }
         catch (Exception ex)
         {
@@ -193,11 +209,11 @@ public class TodoListService : IService
                 EventType.Service,
                 false,
                 new ServiceMessage(
-                    propertyName,
+                    null,
                     $"Could not read the data from { path }. " +
                     $"{ ex.Message }"
-                    )
-                );
+                )
+            );
         }
 
         return false;
@@ -208,9 +224,8 @@ public class TodoListService : IService
     /// </summary>
     /// <param name="path"> The file path where the TodoItems list should be saved. </param>
     /// <param name="list"> The list of TodoItems to save. </param>
-    /// <param name="propertyName"> Used to notify the user about the result of the save operation. (ApplicationEvent) </param>
     /// <returns> True if successful, false otherwise </returns>
-    private bool TrySaveData(string path, List<TodoItem> list, string? propertyName)
+    private bool TrySaveData(string path, List<TodoItem> list)
     {
         try
         {
@@ -220,10 +235,10 @@ public class TodoListService : IService
                 EventType.Service,
                 true,
                 new ServiceMessage(
-                    propertyName,
+                    null,
                     $"Successfully wrote to { path }"
-                    )
-                );
+                )
+            );
 
             return true;
         }
@@ -233,12 +248,12 @@ public class TodoListService : IService
                 EventType.Service,
                 false,
                 new ServiceMessage(
-                    propertyName,
+                    null,
                     $"Could not save the file with path { path }, " +
                     $"please make sure the application has the rights to access it or " +
                     $"select another file."
-                    )
-                );
+                )
+            );
         }
         catch (Exception ex)
         {
@@ -246,11 +261,11 @@ public class TodoListService : IService
                 EventType.Service,
                 false,
                 new ServiceMessage(
-                    propertyName,
+                    null,
                     $"Could not create the file with path { path }, " +
                     $"{ ex.Message }"
-                    )
-                );
+                )
+            );
         }
 
         return false;

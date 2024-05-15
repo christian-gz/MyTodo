@@ -5,7 +5,7 @@ namespace TODO.Configuration;
 
 public class AppSettings
 {
-    public const string DefaultTodoCsvFileName = "todo.csv";
+    public const string DefaultTodoCsvFileName = "todos.csv";
     public const string DefaultArchiveCsvFileName = "archive.csv";
 
     public static readonly string DefaultTodoCsvPath = Path.Combine(Environment.CurrentDirectory, DefaultTodoCsvFileName);

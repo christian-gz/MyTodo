@@ -2,25 +2,21 @@ using System;
 using System.IO;
 using System.Text.Json;
 using TODO.Events;
-using TODO.Services;
 
 namespace TODO.Configuration;
 
 public class SettingsManager
 {
-    public SettingsManager(IService todoService)
+    public SettingsManager()
     {
-        _todoService = todoService;
         LoadSettings();
-
-        UpdateTodoCsvPath(_appSettings!.TodoCsvPath, null);
-        UpdateArchiveCsvPath(_appSettings!.ArchiveCsvPath, null);
     }
 
     private const string _filePath = "appsettings.json";
     private AppSettings _appSettings;
-    private readonly IService _todoService;
+    private AppSettings _appSettingsToApply = new AppSettings();
 
+    public event EventHandler<SettingsChangedEventArgs> SettingsChange;
     public bool SettingsLoaded { get; set; }
 
     /// <summary>
@@ -40,8 +36,11 @@ public class SettingsManager
             EventManager.RaiseEvent(
                 EventType.Settings,
                 false,
-                new SettingsMessage($"Can't write to the settings file. Settings can't be saved.\n" +
-                                    $"{ ex.Message }")
+                new SettingsMessage(
+                    null,
+                    $"Can't write to the settings file. Settings can't be saved.\n" +
+                    $"{ ex.Message }"
+                )
             );
 
             return false;
@@ -54,6 +53,8 @@ public class SettingsManager
     /// </summary>
     private void LoadSettings()
     {
+        SettingsLoaded = false;
+
         if (File.Exists(_filePath))
         {
             try
@@ -64,7 +65,10 @@ public class SettingsManager
                 EventManager.RaiseEvent(
                     EventType.Settings,
                     true,
-                    new SettingsMessage($"Successfully loaded the settings.")
+                    new SettingsMessage(
+                        null,
+                        $"Successfully loaded the settings."
+                    )
                 );
 
                 SettingsLoaded = true;
@@ -75,9 +79,12 @@ public class SettingsManager
                 EventManager.RaiseEvent(
                     EventType.Settings,
                     false,
-                    new SettingsMessage($"Could not access the settings file in {Environment.CurrentDirectory}. " +
-                                        $"Please make sure the application has the rights to access the {_filePath} file. " +
-                                        $"The default settings will be used, but changes to them can't be saved.")
+                    new SettingsMessage(
+                        null,
+                        $"Could not access the settings file in {Environment.CurrentDirectory}. " +
+                        $"Please make sure the application has the rights to access the {_filePath} file. " +
+                        $"The default settings will be used, but changes to them can't be saved."
+                    )
                 );
             }
             catch (Exception ex)
@@ -85,8 +92,11 @@ public class SettingsManager
                 EventManager.RaiseEvent(
                     EventType.Settings,
                     false,
-                    new SettingsMessage($"The settings could not be loaded: { ex.Message } " +
-                                        $"The default settings will be used, but changes to them can't be saved.")
+                    new SettingsMessage(
+                        null,
+                        $"The settings could not be loaded: { ex.Message } " +
+                        $"The default settings will be used, but changes to them can't be saved."
+                    )
                 );
             }
 
@@ -103,46 +113,143 @@ public class SettingsManager
                 EventManager.RaiseEvent(
                     EventType.Settings,
                     true,
-                    new SettingsMessage($"Successfully created the default settings file.")
+                    new SettingsMessage(
+                        null,
+                        $"Successfully created the default settings file."
+                    )
                 );
             }
         }
     }
 
-    public bool CheckSettingsStatus()
+    /// <summary>
+    /// Checks if the settings can be saved to the appsettings.json file.
+    /// </summary>
+    public void CheckSettingsStatus()
     {
         if (!SettingsLoaded)
         {
+            LoadSettings();
+            if (SettingsLoaded)
+            {
+                EventManager.RaiseEvent(
+                    EventType.Settings,
+                    true,
+                    new SettingsMessage(
+                        null,
+                        "The settings are successfully loaded. " +
+                        "Please restart the application to apply the settings."
+                    )
+                );
+            }
+        }
+        else
+        {
             EventManager.RaiseEvent(
                 EventType.Settings,
-                false,
-                new SettingsMessage("The settings could not be loaded. " +
-                                    "The default settings will be used, but changes to them can't be saved.")
+                true,
+                new SettingsMessage(
+                    null,
+                    "The settings are successfully loaded."
+                )
             );
-            return false;
         }
+    }
 
-        return true;
+    /// <summary>
+    /// Finalises the settings change if the Service could apply the change and
+    /// if the SettingsManager can write to the settings file.
+    /// </summary>
+    /// <param name="setting"> Which setting got changed </param>
+    /// <param name="isSuccess"> True if the Service could apply the change. </param>
+    public void ConfirmSettingsChange(string setting, bool isSuccess)
+    {
+        switch (setting)
+        {
+            case "TodoCsvPath":
+                if (isSuccess)
+                {
+                    var savePath = _appSettings.TodoCsvPath;
+                    _appSettings.TodoCsvPath = _appSettingsToApply.TodoCsvPath;
+
+                    if (WriteSettingsToFile())
+                    {
+                        EventManager.RaiseEvent(
+                            EventType.Settings,
+                            true,
+                            new SettingsMessage(
+                                "TodoCsvPath",
+                                "Successfully changed the CSV file of the todos."
+                            )
+                        );
+                    }
+                    else
+                    {
+                        // restore old path if it is not possible to write to the settings file
+                        _appSettings.TodoCsvPath = savePath;
+                    }
+                }
+                else
+                {
+                    EventManager.RaiseEvent(
+                        EventType.Settings,
+                        false,
+                        new SettingsMessage(
+                            "TodoCsvPath",
+                            $"Could not change the CSV file to { _appSettingsToApply.TodoCsvPath  }"
+                        )
+                    );
+                }
+                break;
+            case "ArchiveCsvPath":
+                if (isSuccess)
+                {
+                    var savePath = _appSettings.ArchiveCsvPath;
+                    _appSettings.ArchiveCsvPath = _appSettingsToApply.ArchiveCsvPath;
+
+                    if (WriteSettingsToFile())
+                    {
+                        EventManager.RaiseEvent(
+                            EventType.Settings,
+                            true,
+                            new SettingsMessage(
+                                "ArchiveCsvPath",
+                                "Successfully changed the CSV file of the archive."
+                            )
+                        );
+                    }
+                    else
+                    {
+                        // restore old path if it is not possible to write to the settings file
+                        _appSettings.ArchiveCsvPath = savePath;
+                    }
+                }
+                else
+                {
+                    EventManager.RaiseEvent(
+                        EventType.Settings,
+                        false,
+                        new SettingsMessage(
+                            "ArchiveCsvPath",
+                            $"Could not change the CSV file to { _appSettingsToApply.ArchiveCsvPath  }"
+                        )
+                    );
+                }
+                break;
+        }
     }
 
     /// <summary>
     /// Update the CSV file path for the TodoList. Calls UpdateTodoCsvPath() with the default file name.
     /// </summary>
     /// <param name="newLocation"> The directory path to be used for the new CSV file </param>
-    /// <param name="propertyName"> Used to notify the user about the result of the update operation. (ApplicationEvent) </param>
-    /// <returns>
-    /// True if the settings update succeeded.
-    /// False if the settings update didn't succeeded.
-    /// </returns>
-    public bool UpdateTodoCsvLocation(string? newLocation, string? propertyName)
+    public void UpdateTodoCsvLocation(string? newLocation)
     {
         if (!string.IsNullOrWhiteSpace(newLocation))
         {
             string todoCsvPath = Path.Combine(newLocation, AppSettings.DefaultTodoCsvFileName);
-            return UpdateTodoCsvPath(todoCsvPath, propertyName);
+            UpdateTodoCsvPath(todoCsvPath);
         }
-
-        return false;
     }
 
     /// <summary>
@@ -150,42 +257,16 @@ public class SettingsManager
     /// The file path is only updated if the CSV is successfully loaded or created.
     /// </summary>
     /// <param name="newPath"> The path to be used for the CSV file </param>
-    /// <param name="propertyName"> Used to notify the user about the result of the update operation. (ApplicationEvent) </param>
-    /// <returns>
-    /// True if the settings update succeeded.
-    /// False if the settings update didn't succeeded.
-    /// </returns>
-    public bool UpdateTodoCsvPath(string? newPath, string? propertyName)
+    public void UpdateTodoCsvPath(string? newPath)
     {
         if (!string.IsNullOrWhiteSpace(newPath))
         {
-            bool resultWriteSettings = false;
-            bool serviceResultTodo;
-
-            try
-            {
-                serviceResultTodo = _todoService.RefreshTodoCsvPath(newPath, propertyName);
-            }
-            catch (FileNotFoundException)
-            {
-                serviceResultTodo = _todoService.SaveTodoCsv(newPath, propertyName);
-            }
-
-            if (serviceResultTodo)
-            {
-                if (_appSettings.TodoCsvPath == newPath)
-                    // no need to write the settings to file if the path is the same,
-                    // only happens when the SettingsViewModel initially sets the property
-                    return true;
-
-                _appSettings.TodoCsvPath = newPath;
-                resultWriteSettings = WriteSettingsToFile();
-            }
-
-            return resultWriteSettings && serviceResultTodo;
+            _appSettingsToApply.TodoCsvPath = newPath;
+            SettingsChange?.Invoke(this, new SettingsChangedEventArgs {
+                Setting = "TodoCsvPath",
+                Value = newPath
+            });
         }
-
-        return false;
     }
 
     /// <summary>
@@ -200,20 +281,13 @@ public class SettingsManager
     /// Update the CSV location for the Archive. Calls UpdateArchiveCsvPath() with the default file name.
     /// </summary>
     /// <param name="newLocation"> The directory path to be used for the new CSV file </param>
-    /// <param name="propertyName"> Used to notify the user about the result of the update operation. (ApplicationEvent) </param>
-    /// <returns>
-    /// True if the settings update succeeded.
-    /// False if the settings update didn't succeeded.
-    /// </returns>
-    public bool UpdateArchiveCsvLocation(string? newLocation, string? propertyName)
+    public void UpdateArchiveCsvLocation(string? newLocation)
     {
         if (!string.IsNullOrWhiteSpace(newLocation))
         {
             string archiveCsvPath = Path.Combine(newLocation, AppSettings.DefaultArchiveCsvFileName);
-            return UpdateArchiveCsvPath(archiveCsvPath, propertyName);
+            UpdateArchiveCsvPath(archiveCsvPath);
         }
-
-        return false;
     }
 
     /// <summary>
@@ -221,42 +295,16 @@ public class SettingsManager
     /// The file path is only updated if the CSV is successfully loaded or created.
     /// </summary>
     /// <param name="newPath"> The path to be used for the CSV file </param>
-    /// <param name="propertyName"> Used to notify the user about the result of the update operation. (ApplicationEvent) </param>
-    /// <returns>
-    /// True if the settings update succeeded.
-    /// False if the settings update didn't succeeded.
-    /// </returns>
-    public bool UpdateArchiveCsvPath(string? newPath, string? propertyName)
+    public void UpdateArchiveCsvPath(string? newPath)
     {
         if (!string.IsNullOrWhiteSpace(newPath))
         {
-            bool resultWriteSettings = false;
-            bool serviceResultArchive;
-
-            try
-            {
-                serviceResultArchive = _todoService.RefreshArchiveCsvPath(newPath, propertyName);
-            }
-            catch (FileNotFoundException ex)
-            {
-                serviceResultArchive = _todoService.SaveArchiveCsv(newPath, propertyName);
-            }
-
-            if (serviceResultArchive)
-            {
-                if (_appSettings.ArchiveCsvPath == newPath)
-                    // no need to write if the path is the same, only happens when the
-                    // SettingsViewModel initially sets the property
-                    return true;
-
-                _appSettings.ArchiveCsvPath = newPath;
-                resultWriteSettings = WriteSettingsToFile();
-            }
-
-            return resultWriteSettings && serviceResultArchive;
+            _appSettingsToApply.ArchiveCsvPath = newPath;
+            SettingsChange?.Invoke(this, new SettingsChangedEventArgs {
+                Setting = "ArchiveCsvPath",
+                Value = newPath
+            });
         }
-
-        return false;
     }
 
     /// <summary>

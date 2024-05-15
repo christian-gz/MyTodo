@@ -59,36 +59,16 @@ public interface IService
     public void OnClosing();
 
     /// <summary>
-    /// Try to load the TodoList from the CSV with the todoCsvPath,
-    /// if successful, set the path for further saves of the TodoList.
-    /// </summary>
-    /// <param name="todoCsvPath"> TodoList CSV filepath to try to load the data. </param>
-    /// <param name="propertyName"> Used to notify the user about the result of the load operation. (ApplicationEvent) </param>
-    /// <returns> True if successful, false otherwise </returns>
-    public bool RefreshTodoCsvPath(string todoCsvPath, string? propertyName);
-
-    /// <summary>
     /// Try to save the TodoList in the CSV with the todoCsvPath.
     /// </summary>
     /// <param name="todoCsvPath"> TodoList CSV filepath to try to save the data. </param>
-    /// <param name="propertyName"> Used to notify the user about the result of the save operation. (ApplicationEvent) </param>
     /// <returns> True if successful, false otherwise </returns>
-    public bool SaveTodoCsv(string todoCsvPath, string? propertyName);
-
-    /// <summary>
-    /// Try to load the Archive from the CSV with the archiveCsvPath,
-    /// if successful, set the path for further saves of the Archive.
-    /// </summary>
-    /// <param name="archiveCsvPath"> Archive CSV filepath to try to load the data. </param>
-    /// <param name="propertyName"> Used to notify the user about the result of the load operation. (ApplicationEvent) </param>
-    /// <returns> True if successful, false otherwise </returns>
-    public bool RefreshArchiveCsvPath(string archiveCsvPath, string? propertyName);
+    public bool SaveTodoCsv(string todoCsvPath);
 
     /// <summary>
     /// Try to save the Archive in the CSV with the archiveCsvPath.
     /// </summary>
     /// <param name="archiveCsvPath"> Archive CSV filepath to try to save the data. </param>
-    /// <param name="propertyName"> Used to notify the user about the result of the save operation. (ApplicationEvent) </param>
     /// <returns> True if successful, false otherwise </returns>
-    public bool SaveArchiveCsv(string archiveCsvPath, string? propertyName);
+    public bool SaveArchiveCsv(string archiveCsvPath);
 }
