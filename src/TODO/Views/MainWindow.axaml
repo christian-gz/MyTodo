@@ -22,7 +22,7 @@
                                      Content="{Binding CurrentViewModel}"
                                      Margin="10, 0, 10, 0"/>
 
-        <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Spacing="5" Background="#f0f0f0">
+        <StackPanel Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Spacing="5" Background="{DynamicResource MenuBarBackgroundColor}">
             <Border BorderThickness="1, 1, 0, 1"
                     Background="{Binding ViewOneActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
                     CornerRadius="10, 0, 0, 10"
@@ -30,7 +30,7 @@
                 <Button Command="{Binding NavigateTodoListCommand}"
                         Background="{Binding ViewOneActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
                         CornerRadius="10, 0, 0, 10"
-                        Foreground="Black"
+                        Foreground="{DynamicResource MenuBarForegroundColor}"
                         Padding="8">
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="5, 0, 0, 0">
                         <i:Icon Value="fa-solid fa-list-check" FontSize="20"/>
@@ -48,7 +48,7 @@
                 </Button>
                 <Border.Styles>
                     <Style Selector="Border:pointerover">
-                        <Setter Property="BorderBrush" Value="black"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource MenuBarPointerOverBorderColor}"/>
                     </Style>
                 </Border.Styles>
             </Border>
@@ -60,7 +60,7 @@
                 <Button Command="{Binding NavigateArchiveCommand}"
                         Background="{Binding ViewTwoActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
                         CornerRadius="10, 0, 0, 10"
-                        Foreground="Black"
+                        Foreground="{DynamicResource MenuBarForegroundColor}"
                         Padding="8">
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="5, 0, 0, 0">
                         <i:Icon Value="fa-solid fa-box-archive" FontSize="20"/>
@@ -79,7 +79,7 @@
                 </Button>
                 <Border.Styles>
                     <Style Selector="Border:pointerover">
-                        <Setter Property="BorderBrush" Value="black"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource MenuBarPointerOverBorderColor}"/>
                     </Style>
                 </Border.Styles>
             </Border>
@@ -92,7 +92,7 @@
                 <Button Command="{Binding NavigateStatsCommand}"
                         Background="{Binding ViewThreeActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
                         CornerRadius="10, 0, 0, 10"
-                        Foreground="Black"
+                        Foreground="{DynamicResource MenuBarForegroundColor}"
                         Padding="8">
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="5, 0, 0, 0">
                         <i:Icon Value="fa-solid fa-chart-bar" FontSize="20"/>
@@ -111,7 +111,7 @@
                 </Button>
             <Border.Styles>
                 <Style Selector="Border:pointerover">
-                    <Setter Property="BorderBrush" Value="black"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource MenuBarPointerOverBorderColor}"/>
                 </Style>
             </Border.Styles>
             </Border>
@@ -123,7 +123,7 @@
                 <Button Command="{Binding NavigateSettingsCommand}"
                         Background="{Binding ViewFourActive, Converter={x:Static converters:FuncValueConverters.CurrentViewToBrush}}"
                         CornerRadius="10, 0, 0, 10"
-                        Foreground="Black"
+                        Foreground="{DynamicResource MenuBarForegroundColor}"
                         Padding="8">
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="5, 0, 0, 0">
                         <i:Icon Value="fa-solid fa-gear" FontSize="20"/>
@@ -142,7 +142,7 @@
                 </Button>
             <Border.Styles>
                 <Style Selector="Border:pointerover">
-                    <Setter Property="BorderBrush" Value="black"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource MenuBarPointerOverBorderColor}"/>
                 </Style>
             </Border.Styles>
             </Border>

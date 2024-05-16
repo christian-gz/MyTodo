@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
 using TODO.Configuration;
+using TODO.Services;
 using TODO.ViewModels;
 using TODO.Views;
 
@@ -42,5 +43,6 @@ public partial class App : Application
         {
             RequestedThemeVariant = ThemeVariant.Light;
         }
+        ThemeManager.RefreshCurrentTheme();
     }
 }

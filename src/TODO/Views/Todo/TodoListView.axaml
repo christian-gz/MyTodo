@@ -14,8 +14,6 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:EnumDescriptionConverter x:Key="EnumDescConverter"/>
-
-            <x:Double x:Key="CalendarDatePickerCurrentDayFontSize">15</x:Double>
         </ResourceDictionary>
     </UserControl.Resources>
 

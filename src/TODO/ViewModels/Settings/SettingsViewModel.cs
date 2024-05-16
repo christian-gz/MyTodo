@@ -3,8 +3,6 @@ using System.IO;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Avalonia;
-using Avalonia.Styling;
 using ReactiveUI;
 using TODO.Configuration;
 using TODO.Events;
@@ -87,22 +85,7 @@ public class SettingsViewModel : SwappableViewModelBase
             if (_darkModeEnabled != value)
             {
                 this.RaiseAndSetIfChanged(ref _darkModeEnabled, value);
-
-                Application? app = Application.Current;
-
-                if (app != null)
-                {
-                    if (DarkModeEnabled)
-                    {
-                        app.RequestedThemeVariant = ThemeVariant.Dark;
-                    }
-                    else
-                    {
-                        app.RequestedThemeVariant = ThemeVariant.Light;
-                    }
-
-                    _settingsManager.UpdateDarkModeEnabled(DarkModeEnabled);
-                }
+                _settingsManager.UpdateDarkModeEnabled(DarkModeEnabled);
             }
         }
     }

@@ -1,7 +1,10 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using Avalonia;
+using Avalonia.Styling;
 using TODO.Events;
+using TODO.Services;
 
 namespace TODO.Configuration;
 
@@ -316,14 +319,29 @@ public class SettingsManager
     }
 
     /// <summary>
-    /// Updates the dark mode enabled property.
+    /// Updates the theme of the application.
     /// </summary>
-    public bool UpdateDarkModeEnabled(bool enabled)
+    public void UpdateDarkModeEnabled(bool enabled)
     {
         _appSettings.DarkModeEnabled = enabled;
-        WriteSettingsToFile();
 
-        return true;
+        Application? app = Application.Current;
+
+        if (app != null)
+        {
+            app.RequestedThemeVariant = enabled ? ThemeVariant.Dark : ThemeVariant.Light;
+        }
+
+        WriteSettingsToFile();
+        ThemeManager.RefreshCurrentTheme();
+
+        EventManager.RaiseEvent(
+            EventType.Settings,
+            true,
+            new SettingsMessage(
+                "DarkModeEnabled",
+                null
+            ));
     }
 
     /// <summary>

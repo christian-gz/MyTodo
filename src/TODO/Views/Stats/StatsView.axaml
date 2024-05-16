@@ -13,7 +13,7 @@
     </Design.DataContext>
 
     <StackPanel>
-        <TextBlock Text="Stats of the Archive"
+        <TextBlock Text="Archive Stats"
                    FontSize="20"
                    FontWeight="SemiBold"
                    HorizontalAlignment="Center"

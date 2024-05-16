@@ -40,7 +40,7 @@
             <ToggleSwitch Grid.Row="0" Grid.Column="1"
                     IsChecked="{Binding DarkModeEnabled}"
                     VerticalAlignment="Center"
-                    HorizontalAlignment="Stretch"
+                    HorizontalAlignment="Left"
                     HorizontalContentAlignment="Center"/>
 
 

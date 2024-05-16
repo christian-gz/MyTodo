@@ -38,13 +38,7 @@ public class MainWindowViewModel : ReactiveObject
         NavigateSettingsCommand = ReactiveCommand.Create(NavigateSettings);
 
         this.WhenAnyValue(o => o.CurrentViewModel)
-            .Subscribe(o =>
-            {
-                this.RaisePropertyChanged(nameof(ViewOneActive));
-                this.RaisePropertyChanged(nameof(ViewTwoActive));
-                this.RaisePropertyChanged(nameof(ViewThreeActive));
-                this.RaisePropertyChanged(nameof(ViewFourActive));
-            });
+            .Subscribe(o => RaiseActiveViewPropertiesChanged());
 
         // re raise all ApplicationEvents now that the application is ready to handle them
         EventManager.ApplicationEvent -= collectApplicationEvents;
@@ -53,6 +47,8 @@ public class MainWindowViewModel : ReactiveObject
             EventManager.RaiseEvent(eventArg);
         }
         eventArgsList.Clear();
+
+        EventManager.ApplicationEvent += OnApplicationEvent;
     }
 
     private readonly SwappableViewModelBase _todoListView;
@@ -98,6 +94,42 @@ public class MainWindowViewModel : ReactiveObject
     public void OnClosing()
     {
         _todoListService.OnClosing();
+    }
+
+    private void RaiseActiveViewPropertiesChanged()
+    {
+        this.RaisePropertyChanged(nameof(ViewOneActive));
+        this.RaisePropertyChanged(nameof(ViewTwoActive));
+        this.RaisePropertyChanged(nameof(ViewThreeActive));
+        this.RaisePropertyChanged(nameof(ViewFourActive));
+    }
+
+    /// <summary>
+    /// Checks if the ApplicationEvent is about the Theme of the application and
+    /// in that case causes the converters for the menu bar colors to re-evaluate.
+    /// </summary>
+    /// <param name="sender"> The source of the event. </param>
+    /// <param name="e"> Contains event data including the type of the event
+    /// and relevant messages. </param>
+    private void OnApplicationEvent(object? sender, ApplicationEventArgs e)
+    {
+        switch (e.EventType)
+        {
+            case EventType.Settings:
+                if (e.Message == null)
+                    return;
+
+                SettingsMessage settingsMessage = (SettingsMessage)e.Message;
+
+                if (!string.IsNullOrWhiteSpace(settingsMessage.PropertyName))
+                {
+                    if (settingsMessage.PropertyName == "DarkModeEnabled")
+                    {
+                        RaiseActiveViewPropertiesChanged();
+                    }
+                }
+                break;
+        }
     }
 
     public bool ViewOneActive => CurrentViewModel == _todoListView;
