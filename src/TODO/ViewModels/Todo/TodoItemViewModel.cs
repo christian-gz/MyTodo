@@ -12,10 +12,13 @@ public class TodoItemViewModel : ViewModelBase
     {
         TodoList = new ObservableCollection<TodoItem>()
         {
-            new TodoItem() { Title = "Do something", Priority = Priority.Medium },
+            new TodoItem() { Title = "Do something", Priority = Priority.Medium, DateDeadline = DateTime.Now},
             new TodoItem() { Title = "Buy some milk", Priority = Priority.Low, IsChecked = true },
             new TodoItem() { Title = "Do something else", Priority = Priority.High },
-            new TodoItem() { Title = "Go on a walk", Priority = Priority.Low, IsEdited = true}
+            new TodoItem() { Title = "Go on a walk", Priority = Priority.Low, IsEdited = true},
+            new TodoItem() { Title = "This is a very very long todo title that reaches to the deadline, but does " +
+                                     "not overwrite it because the deadline has its own background.",
+                             Priority = Priority.Medium, DateDeadline = DateTime.Now},
         };
     }
 

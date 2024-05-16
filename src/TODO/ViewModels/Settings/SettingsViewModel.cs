@@ -16,6 +16,7 @@ public class SettingsViewModel : SwappableViewModelBase
     {
         _settingsManager = settingsManager;
 
+        _darkModeEnabled = _settingsManager.GetDarkModeEnabled();
         _selectedFileTodoCsv = _settingsManager.GetTodoCsvPath();
         _selectedFileArchiveCsv = _settingsManager.GetArchiveCsvPath();
         _selectedFolderTodoCsv = Path.GetDirectoryName(_selectedFileTodoCsv);
@@ -47,7 +48,11 @@ public class SettingsViewModel : SwappableViewModelBase
     private readonly SettingsManager _settingsManager;
     private readonly Interaction<string?, string?> _selectFolderInteraction;
     private readonly Interaction<string?, string?> _selectFileInteraction;
+
+    private bool _darkModeEnabled;
+
     private bool _shareCsvLocation;
+
     private string? _selectedFolderTodoCsv;
     private string? _selectedFolderArchiveCsv;
     private string? _selectedFileTodoCsv;
@@ -71,6 +76,19 @@ public class SettingsViewModel : SwappableViewModelBase
     public ICommand SelectFolderArchiveCsvCommand { get; }
     public ICommand SelectFileTodoCsvCommand { get; }
     public ICommand SelectFileArchiveCsvCommand { get; }
+
+    public bool DarkModeEnabled
+    {
+        get => _darkModeEnabled;
+        set
+        {
+            if (_darkModeEnabled != value)
+            {
+                this.RaiseAndSetIfChanged(ref _darkModeEnabled, value);
+                _settingsManager.UpdateDarkModeEnabled(DarkModeEnabled);
+            }
+        }
+    }
 
     public bool ShareCsvLocation
     {

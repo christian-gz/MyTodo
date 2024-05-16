@@ -12,10 +12,27 @@
              FontSize="16">
 
     <UserControl.Resources>
-        <converters:EnumDescriptionConverter x:Key="EnumDescConverter"/>
-        <converters:TodoStateToBrushConverter x:Key="TodoStateToBrushConverter"/>
+        <ResourceDictionary>
+            <converters:EnumDescriptionConverter x:Key="EnumDescConverter"/>
+            <converters:TodoStateToBrushConverter x:Key="TodoStateToBrushConverter"/>
 
-        <x:Double x:Key="CalendarDatePickerCurrentDayFontSize">15</x:Double>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="CalendarDatePickerBorderedDefaultBorderBrush">DimGray</SolidColorBrush>
+                    <SolidColorBrush x:Key="CalendarDatePickerBorderedPointeroverBorderBrush">#7FC1FF</SolidColorBrush>
+
+                    <SolidColorBrush x:Key="ComboBoxSelectorBorderedBorderBrush">DimGray</SolidColorBrush>
+                    <SolidColorBrush x:Key="ComboBoxSelectorBorderedPointeroverBorderBrush">#7FC1FF</SolidColorBrush>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="CalendarDatePickerBorderedPointeroverBorderBrush">#0062D6</SolidColorBrush>
+                    <SolidColorBrush x:Key="CalendarDatePickerBorderedDefaultBorderBrush">DimGray</SolidColorBrush>
+
+                    <SolidColorBrush x:Key="ComboBoxSelectorBorderedBorderBrush">DimGray</SolidColorBrush>
+                    <SolidColorBrush x:Key="ComboBoxSelectorBorderedPointeroverBorderBrush">#0062D6</SolidColorBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Design.DataContext>
@@ -58,6 +75,8 @@
                                        TextDecorations="{Binding IsChecked, Converter={x:Static converters:FuncValueConverters.IsCheckedToTextDecoration}}"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Right"
+                                       Background="{Binding IsChecked, Converter={x:Static converters:FuncValueConverters.IsCheckedToBackgroundBrushConverter}}"
+                                       Padding="10, 0, 0, 0"
                                        FontSize="16"/>
                         </Panel>
                     </Border>
@@ -89,9 +108,6 @@
                         <CalendarDatePicker.Styles>
                             <Style Selector="CalendarDatePicker /template/ TextBox">
                                 <Setter Property="FontSize" Value="16"/>
-                            </Style>
-                            <Style Selector="CalendarDatePicker.Bordered /template/ Border">
-                                <Setter Property="BorderBrush" Value="DimGray"/>
                             </Style>
                         </CalendarDatePicker.Styles>
                     </CalendarDatePicker>
@@ -131,11 +147,6 @@
                                 <TextBlock Text="{Binding Converter={StaticResource EnumDescConverter}}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
-                        <ComboBox.Styles>
-                            <Style Selector="ComboBox.Bordered /template/ Border">
-                                <Setter Property="BorderBrush" Value="DimGray"/>
-                            </Style>
-                        </ComboBox.Styles>
                     </ComboBox>
                     <!-- Delete button if the TodoItem is being edited -->
                     <Button Grid.Column="4"

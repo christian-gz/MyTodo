@@ -37,16 +37,11 @@
                        Text="Dark Mode"
                        VerticalAlignment="Center"
                        Margin="0, 10"/>
-            <Button Grid.Row="0" Grid.Column="1"
-                    Content="Not Active"
-                    IsEnabled="False"
-                    Theme="{DynamicResource SolidButton}"
+            <ToggleSwitch Grid.Row="0" Grid.Column="1"
+                    IsChecked="{Binding DarkModeEnabled}"
                     VerticalAlignment="Center"
-                    HorizontalAlignment="Stretch"
+                    HorizontalAlignment="Left"
                     HorizontalContentAlignment="Center"/>
-            <TextBlock Grid.Row="0" Grid.Column="2"
-                       Text="The current version doesn't support dark mode"
-                       Margin="10, 10"/>
 
 
             <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"

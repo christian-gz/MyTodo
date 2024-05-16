@@ -4,6 +4,8 @@ using System.Globalization;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
+using Avalonia.Styling;
+using TODO.Services;
 
 namespace TODO.Converters;
 
@@ -19,7 +21,11 @@ public class TodoStateToBrushConverter : IMultiValueConverter
         bool isChecked = values[1] as bool? ?? false;
 
         if (isChecked)
-            return new SolidColorBrush(Colors.White);
+        {
+            ThemeVariant themeVariant = ThemeManager.CurrentTheme;
+
+            return new SolidColorBrush(themeVariant == ThemeVariant.Light ? Colors.White : Color.Parse("#1e1e22"));
+        }
 
         if (deadline == null)
             return new SolidColorBrush(Colors.DimGray);
