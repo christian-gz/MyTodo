@@ -13,6 +13,6 @@ public class AppSettings
 
     public string TodoCsvPath { get; set; } = DefaultTodoCsvPath;
     public string ArchiveCsvPath { get; set; } = DefaultArchiveCsvPath;
-
     public bool DarkModeEnabled { get; set; }
+    public bool CompletionSoundEnabled { get; set; } = true;
 }

@@ -10,10 +10,19 @@ namespace TODO.Configuration;
 
 public class SettingsManager
 {
-    public SettingsManager()
+    public SettingsManager(SoundService soundService)
     {
+        _managerInitialised = false;
+
+        _soundService = soundService;
         LoadSettings();
+        UpdateCompletionSoundEnabled(_appSettings!.CompletionSoundEnabled);
+
+        _managerInitialised = true;
     }
+
+    private readonly SoundService _soundService;
+    private readonly bool _managerInitialised;
 
     private const string _filePath = "appsettings.json";
     private AppSettings _appSettings;
@@ -350,5 +359,33 @@ public class SettingsManager
     public bool GetDarkModeEnabled()
     {
         return _appSettings.DarkModeEnabled;
+    }
+
+    /// <summary>
+    /// Updates if the completion sound is used.
+    /// </summary>
+    public void UpdateCompletionSoundEnabled(bool enabled)
+    {
+        _appSettings.CompletionSoundEnabled = enabled;
+        _soundService.CompletionSoundEnabled = enabled;
+        WriteSettingsToFile();
+
+        if (_managerInitialised)
+            EventManager.RaiseEvent(
+                EventType.Settings,
+                true,
+                new SettingsMessage(
+                    "CompletionSoundEnabled",
+                    $"Successfully switched the completion sound { (enabled ? "on" : "off" )}."
+                ));
+    }
+
+    /// <summary>
+    /// Return the CompletionSoundEnabled value.
+    /// </summary>
+    /// <returns></returns>
+    public bool GetCompletionSoundEnabled()
+    {
+        return _appSettings.CompletionSoundEnabled;
     }
 }
