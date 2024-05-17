@@ -52,7 +52,7 @@ public class TodoItemViewModel : ViewModelBase
     /// <summary>
     /// Event to signal, that an TodoItem has been edited.
     /// </summary>
-    public static event EventHandler TodoEdited;
+    public static event EventHandler<TodoItemEventArgs> TodoEdited;
 
     /// <summary>
     /// Event to signal, that an TodoItem has been deleted.
@@ -82,7 +82,7 @@ public class TodoItemViewModel : ViewModelBase
             TodoIsEdited = false;
             todoItem.IsEdited = !todoItem.IsEdited;
 
-            TodoEdited?.Invoke(this, EventArgs.Empty);
+            TodoEdited?.Invoke(this, new TodoItemEventArgs(todoItem));
         }
     }
 
@@ -114,6 +114,6 @@ public class TodoItemViewModel : ViewModelBase
             todoItem.DateFinishedAt = null;
         }
 
-        TodoEdited?.Invoke(this, EventArgs.Empty);
+        TodoEdited?.Invoke(this, new TodoItemEventArgs(todoItem));
     }
 }

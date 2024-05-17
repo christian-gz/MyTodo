@@ -14,16 +14,9 @@ namespace TODO.ViewModels;
 
 public class MainWindowViewModel : ReactiveObject
 {
-    public MainWindowViewModel(SettingsManager settingsManager)
+    public MainWindowViewModel(SettingsManager settingsManager, IService service)
     {
-        // setup a list to save ApplicationEvents that are raised during initialisation
-        List<ApplicationEventArgs> eventArgsList = new();
-        EventHandler<ApplicationEventArgs> collectApplicationEvents = (o, e) => eventArgsList.Add(e);
-        EventManager.ApplicationEvent += collectApplicationEvents;
-
-        TodoListService service = new TodoListService(settingsManager);
         _todoListService = service;
-
 
         _todoListView = new TodoListViewModel(service);
         _archiveView = new ArchiveViewModel(service);
@@ -40,14 +33,6 @@ public class MainWindowViewModel : ReactiveObject
         this.WhenAnyValue(o => o.CurrentViewModel)
             .Subscribe(o => RaiseActiveViewPropertiesChanged());
 
-        // re raise all ApplicationEvents now that the application is ready to handle them
-        EventManager.ApplicationEvent -= collectApplicationEvents;
-        foreach (var eventArg in eventArgsList)
-        {
-            EventManager.RaiseEvent(eventArg);
-        }
-        eventArgsList.Clear();
-
         EventManager.ApplicationEvent += OnApplicationEvent;
     }
 
@@ -55,7 +40,7 @@ public class MainWindowViewModel : ReactiveObject
     private readonly SwappableViewModelBase _archiveView;
     private readonly SwappableViewModelBase _statsView;
     private readonly SwappableViewModelBase _settingsView;
-    private readonly TodoListService _todoListService;
+    private readonly IService _todoListService;
     private SwappableViewModelBase _currentViewModel;
     public SwappableViewModelBase ArchiveView => _archiveView;
 

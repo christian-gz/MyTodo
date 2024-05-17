@@ -17,6 +17,7 @@ public class SettingsViewModel : SwappableViewModelBase
         _settingsManager = settingsManager;
 
         _darkModeEnabled = _settingsManager.GetDarkModeEnabled();
+        _completionSoundEnabled = _settingsManager.GetCompletionSoundEnabled();
         _selectedFileTodoCsv = _settingsManager.GetTodoCsvPath();
         _selectedFileArchiveCsv = _settingsManager.GetArchiveCsvPath();
         _selectedFolderTodoCsv = Path.GetDirectoryName(_selectedFileTodoCsv);
@@ -51,6 +52,9 @@ public class SettingsViewModel : SwappableViewModelBase
 
     private bool _darkModeEnabled;
 
+    private bool _completionSoundEnabled;
+    private string? _completionSoundEnabledInfo;
+
     private bool _shareCsvLocation;
 
     private string? _selectedFolderTodoCsv;
@@ -76,6 +80,19 @@ public class SettingsViewModel : SwappableViewModelBase
     public ICommand SelectFolderArchiveCsvCommand { get; }
     public ICommand SelectFileTodoCsvCommand { get; }
     public ICommand SelectFileArchiveCsvCommand { get; }
+
+    public bool CompletionSoundEnabled
+    {
+        get => _completionSoundEnabled;
+        set
+        {
+            if (_completionSoundEnabled != value)
+            {
+                this.RaiseAndSetIfChanged(ref _completionSoundEnabled, value);
+                _settingsManager.UpdateCompletionSoundEnabled(CompletionSoundEnabled);
+            }
+        }
+    }
 
     public bool DarkModeEnabled
     {
@@ -172,6 +189,11 @@ public class SettingsViewModel : SwappableViewModelBase
         }
     }
 
+    public string? CompletionSoundEnabledInfo
+    {
+        get => _completionSoundEnabledInfo;
+        set => this.RaiseAndSetIfChanged(ref _completionSoundEnabledInfo, value);
+    }
     public string? SelectedFolderTodoCsvInfo
     {
         get => _selectedFolderTodoCsvInfo;
@@ -266,12 +288,13 @@ public class SettingsViewModel : SwappableViewModelBase
                         case "TodoCsvPath":
                             SelectedFileTodoCsvInfo = settingsMessage.Message;
                             SelectedFolderTodoCsvInfo = settingsMessage.Message;
-
                             break;
                         case "ArchiveCsvPath":
                             SelectedFileArchiveCsvInfo = settingsMessage.Message;
                             SelectedFolderArchiveCsvInfo = settingsMessage.Message;
-
+                            break;
+                        case "CompletionSoundEnabled":
+                            CompletionSoundEnabledInfo = settingsMessage.Message;
                             break;
                     }
 
@@ -294,6 +317,8 @@ public class SettingsViewModel : SwappableViewModelBase
     {
         if (!_firstVisit)
         {
+            CompletionSoundEnabledInfo = "";
+
             SelectedFolderTodoCsvInfo = "";
             SelectedFolderArchiveCsvInfo = "";
             SelectedFileTodoCsvInfo = "";
