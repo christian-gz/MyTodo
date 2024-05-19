@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Styling;
 using TODO.Configuration;
 using TODO.Events;
 using TODO.Services;
@@ -15,8 +14,9 @@ namespace TODO;
 public partial class App : Application
 {
     private SettingsManager _settingsManager;
-    private SoundService _soundService;
     private TodoListService _todoListService;
+    private SoundService _soundService;
+    private ThemeManager _themeManager;
 
     public override void Initialize()
     {
@@ -32,11 +32,10 @@ public partial class App : Application
             EventHandler<ApplicationEventArgs> collectApplicationEvents = (o, e) => eventArgsList.Add(e);
             EventManager.ApplicationEvent += collectApplicationEvents;
 
-            _soundService = new SoundService();
-            _settingsManager = new SettingsManager(_soundService);
+            _settingsManager = new SettingsManager();
             _todoListService = new TodoListService(_settingsManager);
-
-            LoadTheme();
+            _soundService = new SoundService(_settingsManager);
+            _themeManager = new ThemeManager(_settingsManager);
 
             desktop.MainWindow = new MainWindow
             {
@@ -53,19 +52,5 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
-    }
-
-    private void LoadTheme()
-    {
-        var isDarkMode = _settingsManager.GetDarkModeEnabled();
-        if (isDarkMode)
-        {
-            RequestedThemeVariant = ThemeVariant.Dark;
-        }
-        else
-        {
-            RequestedThemeVariant = ThemeVariant.Light;
-        }
-        ThemeManager.RefreshCurrentTheme();
     }
 }

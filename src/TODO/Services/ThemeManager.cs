@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Styling;
+using TODO.Configuration;
 
 namespace TODO.Services;
 
@@ -7,21 +8,41 @@ namespace TODO.Services;
 /// Holds the current theme of the application so the converters for the design
 /// can get it more easily.
 /// </summary>
-public static class ThemeManager
+public class ThemeManager
 {
+    private readonly SettingsManager _settingsManager;
     public static ThemeVariant CurrentTheme { get; private set; } = ThemeVariant.Light;
 
+    public ThemeManager(SettingsManager settingsManager)
+    {
+        _settingsManager = settingsManager;
+        bool darkModeEnabled = _settingsManager.GetDarkModeEnabled();
+        SetApplicationTheme(darkModeEnabled ? ThemeVariant.Dark : ThemeVariant.Light);
+
+        _settingsManager.SettingsChange += HandleSettingsChange;
+    }
+
+    private void HandleSettingsChange(object? o, SettingsChangedEventArgs e)
+    {
+        if (e.Setting == "DarkModeEnabled")
+        {
+            bool value = bool.Parse(e.Value);
+            SetApplicationTheme(value ? ThemeVariant.Dark : ThemeVariant.Light);
+        }
+    }
+
     /// <summary>
-    /// Refreshes the value of the <see cref="CurrentTheme"/> property after every change
-    /// to the theme of the application. Gets called by App.axaml.cs and the SettingsManager.
+    /// Sets the theme of the application after every switch of the setting.
     /// </summary>
-    public static void RefreshCurrentTheme()
+    public void SetApplicationTheme(ThemeVariant themeVariant)
     {
         Application? app = Application.Current;
 
         if (app != null)
         {
-            CurrentTheme = app.ActualThemeVariant;
+            app.RequestedThemeVariant = themeVariant;
         }
+
+        CurrentTheme = themeVariant;
     }
 }

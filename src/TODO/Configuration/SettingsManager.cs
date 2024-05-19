@@ -1,28 +1,16 @@
 using System;
 using System.IO;
 using System.Text.Json;
-using Avalonia;
-using Avalonia.Styling;
 using TODO.Events;
-using TODO.Services;
 
 namespace TODO.Configuration;
 
 public class SettingsManager
 {
-    public SettingsManager(SoundService soundService)
+    public SettingsManager()
     {
-        _managerInitialised = false;
-
-        _soundService = soundService;
         LoadSettings();
-        UpdateCompletionSoundEnabled(_appSettings!.CompletionSoundEnabled);
-
-        _managerInitialised = true;
     }
-
-    private readonly SoundService _soundService;
-    private readonly bool _managerInitialised;
 
     private const string _filePath = "appsettings.json";
     private AppSettings _appSettings;
@@ -333,16 +321,12 @@ public class SettingsManager
     public void UpdateDarkModeEnabled(bool enabled)
     {
         _appSettings.DarkModeEnabled = enabled;
-
-        Application? app = Application.Current;
-
-        if (app != null)
-        {
-            app.RequestedThemeVariant = enabled ? ThemeVariant.Dark : ThemeVariant.Light;
-        }
-
         WriteSettingsToFile();
-        ThemeManager.RefreshCurrentTheme();
+
+        SettingsChange?.Invoke(this, new SettingsChangedEventArgs {
+            Setting = "DarkModeEnabled",
+            Value = "" + enabled
+        });
 
         EventManager.RaiseEvent(
             EventType.Settings,
@@ -367,17 +351,20 @@ public class SettingsManager
     public void UpdateCompletionSoundEnabled(bool enabled)
     {
         _appSettings.CompletionSoundEnabled = enabled;
-        _soundService.CompletionSoundEnabled = enabled;
         WriteSettingsToFile();
 
-        if (_managerInitialised)
-            EventManager.RaiseEvent(
-                EventType.Settings,
-                true,
-                new SettingsMessage(
-                    "CompletionSoundEnabled",
-                    $"Successfully switched the completion sound { (enabled ? "on" : "off" )}."
-                ));
+        SettingsChange?.Invoke(this, new SettingsChangedEventArgs {
+            Setting = "CompletionSoundEnabled",
+            Value = "" + enabled
+        });
+
+        EventManager.RaiseEvent(
+            EventType.Settings,
+            true,
+            new SettingsMessage(
+                "CompletionSoundEnabled",
+                $"Successfully switched the completion sound { (enabled ? "on" : "off" )}."
+            ));
     }
 
     /// <summary>
